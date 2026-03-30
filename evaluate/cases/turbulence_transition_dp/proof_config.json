@@ -1,0 +1,51 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "fluid mechanics / nonlinear PDE",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_nodes": [
+    {
+      "key": "nse_and_base_flow",
+      "statement": "Incompressible Navier-Stokes equations in a circular pipe of radius R with mean velocity U: d/dt u + (u . grad) u = -grad p + (1/Re) lap u, div u = 0, with no-slip boundary condition u = 0 at r = R. The Reynolds number Re = U * D / nu where D = 2R is diameter and nu is kinematic viscosity. The unique laminar base flow is the Hagen-Poiseuille profile: U_0(r) = (1 - r^2) z-hat (in non-dimensional units with R=1, U=1), which is an exact solution for all Re.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "perturbation_energy",
+      "statement": "Exact perturbation energy equation: Write u = U_0 + u' where u' is a perturbation with L2 norm ||u'||. Substituting into NSE and taking the L2 inner product with u' yields: d/dt (||u'||^2 / 2) = - integral (u' v' dU_0/dr) dV - (1/Re) ||grad u'||^2. The first term (production) involves the Reynolds stress u'v' coupling to the base shear dU_0/dr = -2r. The second term (dissipation) is always negative. This equation is exact — no approximation.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "stability_facts",
+      "statement": "Two rigorous stability results for Hagen-Poiseuille flow: (1) Joseph's energy stability theorem: if Re < Re_E approximately 82.9, then d/dt ||u'||^2 < 0 for ALL perturbations u' != 0, so the flow is globally, unconditionally stable — every perturbation decays. (2) Linear (modal) stability: the linearized operator L about U_0 has all eigenvalues with negative real part for ALL values of Re (the flow is linearly stable at every Reynolds number). These two facts together leave a gap: the flow is stable for small amplitude and all structures are linearly decaying, yet turbulence is observed.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "subcritical_transition_observation",
+      "statement": "Experimental and numerical observations: Hagen-Poiseuille flow transitions to turbulence at Re approximately 1700-2300 when subjected to finite-amplitude perturbations, despite linear stability at all Re. The critical perturbation amplitude epsilon_c(Re) below which all perturbations eventually decay is observed empirically to scale as epsilon_c ~ Re^{-gamma} for some positive exponent gamma. The value of gamma and its theoretical derivation from the Navier-Stokes equations remain an open problem; experimental estimates suggest gamma is between 1 and 2.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    }
+  ],
+  "target": {
+    "key": "gamma_exponent",
+    "statement": "Derive from first principles using the incompressible Navier-Stokes equations the exact value of the exponent gamma such that the critical perturbation amplitude for subcritical transition in pipe flow scales as epsilon_c(Re) ~ Re^{-gamma} as Re -> infinity. The derivation must not use any empirical input; it must follow from the mathematical structure of the NSE perturbation equations and produce a definite value (or prove that no universal gamma exists).",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "fluid mechanics / mathematical physics"
+  },
+  "planning_constraints": [
+    "Do not use gamma = 1 or gamma = 3/2 as a given input; the value must be derived from the NSE equations.",
+    "Do not assume the linearized operator is non-normal without proving L* L != L L* from the operator definition.",
+    "Do not cite Landahl (1980) transient growth bounds or the G_max ~ Re^2 result as a given; if transient growth is relevant, the scaling must be derived.",
+    "The gap between Re_E approximately 82 (global stability) and observed transition at Re approximately 2000 must be explained mechanistically — what changes in the energy equation at finite amplitude?",
+    "Any scaling argument must explicitly track how the Re dependence enters through both the production term (Re-independent) and the dissipation term (1/Re * ||grad u'||^2).",
+    "If a nonlinear threshold argument is used, the nonlinear terms must be bounded explicitly in terms of ||u'|| and Re; do not assume the Sobolev embedding constants are O(1)."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "case_id": "turbulence_transition_dp",
+  "display_name": "管流湍流临界振幅指数 γ",
+  "source_proof_config": "proof_config.json",
+  "benchmark_scope": "Derive the critical perturbation amplitude scaling epsilon_c(Re) ~ Re^{-gamma} for subcritical transition in Hagen-Poiseuille pipe flow from the incompressible NSE, obtaining the exact value of gamma without empirical input. Linear stability predicts no transition at all; the challenge is to derive the nonlinear threshold from energy balance.",
+  "tags": ["physics", "fluid-mechanics", "navier-stokes", "turbulence", "open-problem", "frontier"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": false,
+    "min_path_confidence": 0.75,
+    "max_grade_d_ratio": 0.25,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Do not use gamma = 1 or gamma = 3/2 as given input; the value must be derived from NSE structure.",
+    "Do not assume non-normality of the linearized operator without proving L*L != LL* from the definition.",
+    "Do not cite Landahl (1980) or G_max ~ Re^2 as given; if transient growth is used, derive the Re-scaling.",
+    "The energy gap between Re_E ~ 82 and transition Re ~ 2000 must be mechanistically explained.",
+    "Any scaling argument must explicitly track how Re enters both the production term and the dissipation term.",
+    "Nonlinear bounds must be explicit in ||u'|| and Re; do not assume Sobolev constants are O(1)."
+  ]
+}

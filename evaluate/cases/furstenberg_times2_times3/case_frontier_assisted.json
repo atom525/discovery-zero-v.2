@@ -1,0 +1,27 @@
+{
+  "case_id": "furstenberg_times2_times3",
+  "display_name": "Furstenberg ×2×3 猜想（零熵情形，前沿辅助）",
+  "source_proof_config": "proof_config_frontier.json",
+  "benchmark_scope": "Prove the zero-entropy case of Furstenberg's conjecture: any ergodic T_2-and-T_3-invariant measure with h=0 is purely atomic (a uniform measure on a finite orbit). Rudolph's theorem already handles h>0; the h=0 case is the remaining open part.",
+  "tags": ["mathematics", "ergodic-theory", "measure-theory", "open-problem", "frontier", "frontier-assisted"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": true,
+    "min_path_confidence": 0.8,
+    "max_grade_d_ratio": 0.2,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Frontier ergodic-theory partial results may be used as seeds, but you must isolate the exact remaining obstruction in the zero-entropy case.",
+    "Do not claim the problem is solved by importing positive-entropy or disjointness technology alone.",
+    "Any use of frontier theorems should be turned into explicit bridge propositions describing what gap they leave."
+  ]
+}

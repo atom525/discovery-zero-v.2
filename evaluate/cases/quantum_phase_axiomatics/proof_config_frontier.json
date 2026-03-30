@@ -1,0 +1,70 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "condensed matter physics / mathematical physics",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_policy": "frontier_assisted",
+  "seed_nodes": [
+    {
+      "key": "landau_paradigm",
+      "statement": "Landau-Ginzburg symmetry-breaking theory classifies phases via symmetry groups and order parameters.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "ground_state_and_gap",
+      "statement": "CGW path-connectivity classifies gapped phases via smooth paths of local gapped Hamiltonians.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "mathematical physics"
+    },
+    {
+      "key": "topological_insulators",
+      "statement": "Topological insulators show that symmetry breaking alone is insufficient: phases can be distinct without a local order parameter.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "kitaev_honeycomb",
+      "statement": "The Kitaev honeycomb model exhibits both Abelian and non-Abelian topological phases and highlights hidden gauge / entanglement structure beyond Landau order.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "cgw_limitation",
+      "statement": "The CGW definition only applies to gapped systems; any complete axiomatization must also cover gapless phases such as quantum critical points and gapless spin liquids.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "topological_order_seed",
+      "statement": "Frontier framework seed: topological order can be encoded via long-range entanglement, modular data, and topological entanglement entropy; these are allowed as black-box conceptual seeds.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "topological phases"
+    },
+    {
+      "key": "spt_seed",
+      "statement": "Frontier framework seed: symmetry-protected topological phases admit classification principles using anomalies, boundary obstruction, and in some regimes group cohomology / cobordism style data.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "SPT phases"
+    }
+  ],
+  "target": {
+    "key": "quantum_phase_axioms",
+    "statement": "Derive a minimal axiomatic framework — a set of axioms A_1, A_2, ..., A_k — for quantum phases of matter that: (1) subsumes the Landau-Ginzburg symmetry-breaking classification as a special case; (2) classifies gapped topological phases (topological insulators, topological order, SPT phases) without reducing to symmetry breaking; (3) applies to gapless systems including quantum critical points and quantum spin liquids; (4) produces computable invariants that distinguish any two inequivalent phases; (5) is falsifiable in the sense that a hypothetical new quantum system could in principle violate one of the axioms, demonstrating that it represents a genuinely new phase not covered by the framework.",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "mathematical physics"
+  },
+  "planning_constraints": [
+    "Frontier frameworks such as CGW, topological-order diagnostics, and SPT classification principles may be used as black-box seeds.",
+    "You must explicitly identify the unresolved extension from gapped to general gapless phases.",
+    "Do not treat a complete gapless-capable axiomatization as an available seed."
+  ]
+}

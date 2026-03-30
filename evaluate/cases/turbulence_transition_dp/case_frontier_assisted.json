@@ -1,0 +1,27 @@
+{
+  "case_id": "turbulence_transition_dp",
+  "display_name": "管流湍流临界振幅指数 γ（前沿辅助）",
+  "source_proof_config": "proof_config_frontier.json",
+  "benchmark_scope": "Derive the critical perturbation amplitude scaling epsilon_c(Re) ~ Re^{-gamma} for subcritical transition in Hagen-Poiseuille pipe flow from the incompressible NSE, obtaining the exact value of gamma without empirical input. Linear stability predicts no transition at all; the challenge is to derive the nonlinear threshold from energy balance.",
+  "tags": ["physics", "fluid-mechanics", "navier-stokes", "turbulence", "open-problem", "frontier", "frontier-assisted"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": false,
+    "min_path_confidence": 0.75,
+    "max_grade_d_ratio": 0.25,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Frontier transition and transient-growth results may be used as seeds, but you must state exactly which scaling step remains nontrivial.",
+    "Do not treat any proposed value of gamma as settled merely because a partial asymptotic argument suggests it.",
+    "Turn imported frontier scalings into explicit bridge propositions describing the remaining derivation gap."
+  ]
+}

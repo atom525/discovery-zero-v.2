@@ -1,0 +1,70 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "prebiotic chemistry / chemical kinetics",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_policy": "frontier_assisted",
+  "seed_nodes": [
+    {
+      "key": "ee_and_homochirality_fact",
+      "statement": "Enantiomeric excess ee measures chirality bias; biological systems are near-homochiral while abiotic syntheses such as Miller-Urey are racemic.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    },
+    {
+      "key": "frank_model",
+      "statement": "Frank-type autocatalysis can amplify a nonzero initial ee to near-complete homochirality.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "frank_model_symmetry_barrier",
+      "statement": "Frank model alone cannot break perfect symmetry from ee_0 = 0 in a deterministic racemic closed system.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "stochastic_and_prebiotic_constraints",
+      "statement": "Finite-volume stochastic fluctuations can create tiny chiral bias, but macroscopic first-passage times are generally too long; prebiotic mechanisms must remain early-Earth compatible.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    },
+    {
+      "key": "soai_seed",
+      "statement": "Frontier mechanism seed: the Soai reaction is a real chemical system with extreme asymmetric autocatalysis and large ee amplification, but it requires anhydrous organozinc chemistry and is not directly prebiotic.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "asymmetric autocatalysis"
+    },
+    {
+      "key": "viedma_seed",
+      "statement": "Frontier mechanism seed: Viedma ripening can drive crystal-level homochirality by grinding and dissolution-recrystallization cycles, but does not by itself establish molecular-level amino-acid homochirality.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "crystallization kinetics"
+    },
+    {
+      "key": "cpl_seed",
+      "statement": "Frontier mechanism seed: circularly polarized light can induce small chiral biases in photochemistry, but the anisotropy factor is too small to reach |ee| > 0.999 without further amplification.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "photochemistry"
+    }
+  ],
+  "target": {
+    "key": "prebiotic_homochirality",
+    "statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "prebiotic chemistry"
+  },
+  "planning_constraints": [
+    "Frontier mechanisms such as Soai, Viedma ripening, and CPL may be used as black-box seeds.",
+    "You must explicitly identify the missing compatibility or amplification step that prevents any one seed from already solving the full prebiotic target.",
+    "Do not treat a fully early-Earth-compatible complete mechanism as an available seed."
+  ]
+}

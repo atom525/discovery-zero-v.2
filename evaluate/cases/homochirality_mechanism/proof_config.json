@@ -1,0 +1,52 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "prebiotic chemistry / chemical kinetics",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_nodes": [
+    {
+      "key": "ee_and_homochirality_fact",
+      "statement": "Enantiomeric excess is defined as ee = (n_L - n_D) / (n_L + n_D) where n_L and n_D are the mole fractions of left-handed and right-handed enantiomers respectively; ee ranges from -1 to +1, with ee = 0 meaning a racemic (50/50) mixture. Biological fact: all known life on Earth uses exclusively L-alpha-amino acids (with rare exceptions) and D-ribose/D-deoxyribose sugars, achieving |ee| ~ 1. Miller-Urey experiment (1953): abiotic amino acid synthesis from simple gases (CH4, H2, NH3, H2O) under spark discharge produces racemic mixtures with ee ~ 0. Origin of biological homochirality from a racemic starting state is an open problem.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    },
+    {
+      "key": "frank_model",
+      "statement": "Frank (1953) autocatalytic amplification model: Consider two enantiomers L and D produced from an achiral substrate S at equal rates k_0. Each enantiomer autocatalyzes its own production (rate k_a * [L] * [S] for L, and k_a * [D] * [S] for D), and the two enantiomers inhibit each other's production (mutual inhibition, rate k_i * [L] * [D]). Under this dynamics, the enantiomeric excess ee satisfies approximately d(ee)/dt = k_a * [S] * ee * (1 - ee^2) at leading order. Deterministic dynamics: if ee(0) != 0 then |ee(t)| -> 1 as t -> infinity (complete chiral amplification). The homochiral steady states (ee = +1 or ee = -1) are asymptotically stable attractors.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "frank_model_symmetry_barrier",
+      "statement": "Critical limitation of Frank model: The racemic state ee = 0 is an unstable fixed point of the deterministic Frank dynamics, but it is a true equilibrium: if ee(0) = 0 exactly then d(ee)/dt = 0 and the system remains racemic for all time. In a purely deterministic, closed, isolated system starting from a truly racemic mixture, no spontaneous symmetry breaking occurs — the Frank model requires a nonzero initial seed chirality ee(0) != 0 to produce homochirality. This seed chirality must itself be explained.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "stochastic_and_prebiotic_constraints",
+      "statement": "Stochastic fluctuations: In a finite-volume system with N molecules, thermal fluctuations cause random deviations of order 1/sqrt(N) from the deterministic trajectory. Near the racemic fixed point ee = 0, stochastic fluctuations can provide a nonzero ee(0) ~ 1/sqrt(N). Once a fluctuation sets |ee| > delta_c for some critical value, the Frank-type autocatalysis can amplify it to |ee| ~ 1. However, the mean first-passage time for this event scales exponentially with N for large N, making spontaneous stochastic homochirality implausible in macroscopic systems. Prebiotic chemistry constraints: any proposed mechanism must be compatible with conditions on early Earth (~4 billion years ago) — aqueous environment, no pyrophoric or anhydrous organometallic reagents, available energy sources include UV radiation, lightning, and hydrothermal vents.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    }
+  ],
+  "target": {
+    "key": "prebiotic_homochirality",
+    "statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "prebiotic chemistry"
+  },
+  "planning_constraints": [
+    "The Frank model alone does not solve the problem: it requires a nonzero initial ee as input; the mechanism must explain where that initial bias comes from in a racemic world.",
+    "Do not assume any single known mechanism (circularly polarized light, Soai reaction, Viedma ripening, parity-violating energy differences) is sufficient without documenting its limitations; each has known constraints.",
+    "Circularly polarized light (CPL): maximum achievable ee is limited by the anisotropy factor g ~ 0.01 for amino acids; a CPL-only mechanism cannot reach |ee| > 0.999 without destroying essentially all material.",
+    "Soai reaction achieves >99% ee but requires anhydrous conditions and organozinc reagents not available in prebiotic settings.",
+    "Viedma ripening achieves crystal-level homochirality via grinding and Ostwald ripening, but this operates at the crystal level, not the molecular level of amino acid enantiomers.",
+    "Any proposed sequential mechanism must explicitly address the environmental compatibility between successive steps — the conditions favoring step i must not preclude step i+1.",
+    "The kinetic analysis must quantify: minimum initial ee_0 required for Frank-type amplification, and the timescale to reach |ee| > 0.999."
+  ]
+}

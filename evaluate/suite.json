@@ -1,0 +1,14 @@
+{
+  "suite_id": "frontier_open_problems_v1",
+  "display_name": "Zero 前沿开放问题评测套件 v1",
+  "description": "5个经API实测确认超出独立LLM能力的开放问题：2道数学（孤独跑者n=11、Furstenberg零熵）、1道物理（管流湍流γ指数）、1道化学（前生物同手性机制）、1道概念归纳（量子相公理化框架）。种子仅含教科书级基础知识，评测Zero的自主前沿探索能力。",
+  "repeats": 1,
+  "run_mode": "serial",
+  "cases": [
+    "cases/lonely_runner_n11/case.json",
+    "cases/furstenberg_times2_times3/case.json",
+    "cases/turbulence_transition_dp/case.json",
+    "cases/homochirality_mechanism/case.json",
+    "cases/quantum_phase_axiomatics/case.json"
+  ]
+}

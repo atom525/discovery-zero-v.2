@@ -1,0 +1,27 @@
+{
+  "case_id": "lonely_runner_n11",
+  "display_name": "孤独跑者猜想 n=11（前沿辅助）",
+  "source_proof_config": "proof_config_frontier.json",
+  "benchmark_scope": "Prove the Lonely Runner Conjecture for n=11 runners: given 10 runners with distinct positive integer speeds on the unit circle, there exists a time when all are simultaneously at distance >= 1/11 from the fixed runner.",
+  "tags": ["mathematics", "combinatorics", "diophantine-approximation", "open-problem", "frontier", "frontier-assisted"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": true,
+    "enable_strict_lean": true,
+    "min_path_confidence": 0.6,
+    "max_grade_d_ratio": 0.3,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Frontier partial results may be used as seeds, but you must still explain what gap remains for n = 11.",
+    "If a Fourier / covering / view-obstruction route is used, identify exactly which reduction steps are imported and which step still requires new work.",
+    "Do not claim the conjecture is solved merely because smaller-n or structural partial results are available."
+  ]
+}

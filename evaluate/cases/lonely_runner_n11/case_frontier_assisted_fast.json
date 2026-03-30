@@ -1,0 +1,26 @@
+{
+  "case_id": "lonely_runner_n11_fast",
+  "display_name": "孤独跑者猜想 n=11（前沿辅助，快速验证）",
+  "source_proof_config": "proof_config_frontier.json",
+  "benchmark_scope": "Prove the Lonely Runner Conjecture for n=11 runners.",
+  "tags": ["mathematics", "open-problem", "frontier", "smoke"],
+  "allow_refutation": false,
+  "model": "gpt-5.2",
+  "timeouts": {
+    "experiment": 90,
+    "decompose": 120,
+    "lean": 180
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": true,
+    "min_path_confidence": 0.8,
+    "max_grade_d_ratio": 0.2,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Frontier partial results may be used as seeds, but keep explicit unresolved gaps.",
+    "Do not claim theorem closure without executable evidence and bridge consistency."
+  ]
+}

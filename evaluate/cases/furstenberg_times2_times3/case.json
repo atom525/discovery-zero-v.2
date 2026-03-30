@@ -1,0 +1,30 @@
+{
+  "case_id": "furstenberg_times2_times3",
+  "display_name": "Furstenberg ×2×3 猜想（零熵情形）",
+  "source_proof_config": "proof_config.json",
+  "benchmark_scope": "Prove the zero-entropy case of Furstenberg's conjecture: any ergodic T_2-and-T_3-invariant measure with h=0 is purely atomic (a uniform measure on a finite orbit). Rudolph's theorem already handles h>0; the h=0 case is the remaining open part.",
+  "tags": ["mathematics", "ergodic-theory", "measure-theory", "open-problem", "frontier"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": true,
+    "min_path_confidence": 0.80,
+    "max_grade_d_ratio": 0.20,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Rudolph's theorem handles h_mu(T_2) > 0; you must address the strictly harder zero-entropy case h_mu(T_2) = 0.",
+    "Do not use Host's theorem (1995) on disjointness as a black box; it requires independent derivation.",
+    "Do not assume zero entropy implies zero Hausdorff dimension without proof from the entropy definition.",
+    "Do not assume Hausdorff dimension 0 implies pure atomicity; this is false in general — the key is the JOINT T_2 and T_3 invariance.",
+    "Any Fourier-analytic argument must derive its key estimates from the T_p-invariance Fourier characterization in the seeds.",
+    "Do not use the full Furstenberg conjecture as an intermediate step."
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "case_id": "quantum_phase_axiomatics",
+  "display_name": "量子相公理化框架",
+  "source_proof_config": "proof_config.json",
+  "benchmark_scope": "Derive a minimal axiomatic framework A_1,...,A_k for quantum phases that: subsumes Landau-Ginzburg, classifies topological phases, handles gapless phases, produces computable invariants, and is falsifiable. The CGW path-connectivity definition only covers gapped phases; this target requires a strictly more general framework.",
+  "tags": ["physics", "condensed-matter", "topology", "concept-induction", "open-problem", "frontier"],
+  "allow_refutation": true,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": false,
+    "min_path_confidence": 0.65,
+    "max_grade_d_ratio": 0.35,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Do not use the CGW path-connectivity definition as an axiom itself — it is what the framework must improve upon.",
+    "The framework MUST handle gapless phases; an axiom system covering only gapped phases is incomplete.",
+    "Landau order parameters are insufficient — the axioms must account for topological phases without symmetry breaking.",
+    "Do not assume all phases require a symmetry group; topological order exists without symmetry protection.",
+    "Each axiom must have an explicit falsification criterion — provide a hypothetical system that would violate it.",
+    "Invariants must have a defined computational procedure, even if computationally hard.",
+    "If a proposed axiom system fails to classify any of the four known phase types (symmetry-broken / topological-order / SPT / gapless-critical), mark it as refuted and propose a revision."
+  ]
+}

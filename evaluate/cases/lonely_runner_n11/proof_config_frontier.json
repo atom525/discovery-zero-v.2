@@ -1,0 +1,63 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "combinatorics / Diophantine approximation",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_policy": "frontier_assisted",
+  "seed_nodes": [
+    {
+      "key": "bad_set_def",
+      "statement": "For a runner with positive integer speed v on the unit circle, define the 'bad set' B_v = {t in [0,1) : min({v*t}, 1 - {v*t}) < 1/n}, where {x} = x - floor(x) is the fractional part. B_v is the set of times when the runner is within angular distance 1/n of the reference position (origin). The Lebesgue measure of B_v is exactly 2/n.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "measure theory"
+    },
+    {
+      "key": "lrc_equivalence",
+      "statement": "The Lonely Runner Conjecture for n runners (1 fixed at origin, n-1 with distinct positive integer speeds v_1 < v_2 < ... < v_{n-1}) is equivalent to: the union of bad sets B_{v_1} union B_{v_2} union ... union B_{v_{n-1}} does not cover all of [0,1). That is, there exists a time t when every runner has distance at least 1/n from the fixed runner.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "combinatorics"
+    },
+    {
+      "key": "weyl_equidistribution",
+      "statement": "Weyl's Equidistribution Theorem: For any real alpha that is irrational, the sequence {k*alpha mod 1 : k = 1, 2, 3, ...} is equidistributed in [0,1). More generally, for distinct real numbers alpha_1, ..., alpha_m with 1, alpha_1, ..., alpha_m linearly independent over Q, the joint sequence ({k*alpha_1}, ..., {k*alpha_m}) is equidistributed on the torus [0,1)^m.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "harmonic analysis"
+    },
+    {
+      "key": "small_cases",
+      "statement": "For n=2 and n=3 the Lonely Runner Conjecture can be verified directly by combinatorial analysis of the bad sets and their complements.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "combinatorics"
+    },
+    {
+      "key": "partial_result_n_leq_7",
+      "statement": "Frontier partial result: the Lonely Runner Conjecture is known to hold for n <= 7. This may be used as a black-box benchmark seed, but it does not settle n = 11.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "combinatorics"
+    },
+    {
+      "key": "three_distance_theorem",
+      "statement": "Frontier theorem seed: the Three-Distance Theorem controls the gap structure of fractional-part sets {k alpha} on the circle. It may be used as a black box when analyzing covering patterns of bad sets, but its use must still be connected explicitly to the n = 11 overlap geometry.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "Diophantine approximation"
+    }
+  ],
+  "target": {
+    "key": "lrc_n11",
+    "statement": "The Lonely Runner Conjecture holds for n = 11: Given any 10 runners with distinct positive integer speeds v_1 < v_2 < ... < v_10 on the unit circle, with a fixed runner at the origin, there exists a time t > 0 such that every moving runner is at angular distance at least 1/11 from the fixed runner simultaneously. Equivalently, the 10 bad sets B_{v_1}, ..., B_{v_10} do not cover [0,1).",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "combinatorics / Diophantine approximation"
+  },
+  "planning_constraints": [
+    "Frontier partial results such as n <= 7 and the Three-Distance Theorem are allowed as black-box seeds.",
+    "You must explicitly state why those allowed frontier seeds do not already close the n = 11 case.",
+    "Do not treat the conjecture itself for n = 11 or any theorem equivalent to the full n = 11 statement as an available seed."
+  ]
+}

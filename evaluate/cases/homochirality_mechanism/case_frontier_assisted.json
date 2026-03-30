@@ -1,0 +1,27 @@
+{
+  "case_id": "homochirality_mechanism",
+  "display_name": "前生物同手性起源机制（前沿辅助）",
+  "source_proof_config": "proof_config_frontier.json",
+  "benchmark_scope": "Construct a complete prebiotic mechanism achieving |ee| > 0.999 from ee_0 = 0 under early-Earth conditions. The mechanism must explain the source of initial symmetry breaking AND its amplification to near-complete homochirality, with full kinetic analysis. No single known mechanism is sufficient; a novel combination or new mechanism is required.",
+  "tags": ["chemistry", "prebiotic", "homochirality", "kinetics", "open-problem", "frontier", "frontier-assisted"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": false,
+    "min_path_confidence": 0.7,
+    "max_grade_d_ratio": 0.3,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Frontier homochirality mechanisms may be used as seeds, but you must show what incompatibility or missing amplification step remains.",
+    "Do not claim success merely by listing Soai, Viedma, CPL, or PVED; explain how the combined route closes or fails to close the early-Earth gap.",
+    "Any imported frontier mechanism should be translated into explicit kinetic bridge propositions."
+  ]
+}

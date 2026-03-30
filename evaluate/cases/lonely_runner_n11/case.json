@@ -1,0 +1,30 @@
+{
+  "case_id": "lonely_runner_n11",
+  "display_name": "孤独跑者猜想 n=11",
+  "source_proof_config": "proof_config.json",
+  "benchmark_scope": "Prove the Lonely Runner Conjecture for n=11 runners: given 10 runners with distinct positive integer speeds on the unit circle, there exists a time when all are simultaneously at distance >= 1/11 from the fixed runner.",
+  "tags": ["mathematics", "combinatorics", "diophantine-approximation", "open-problem", "frontier"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": true,
+    "min_path_confidence": 0.80,
+    "max_grade_d_ratio": 0.20,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "Do not cite the Barajas-Serra (2008) result that LRC holds for n <= 7 as a given fact; if that result is needed, its proof must be derived from the seeds provided.",
+    "Do not use the Three-Distance Theorem (Steinhaus conjecture) as a black box; any application of it must be proved from the seed definitions.",
+    "The naive union bound gives total measure 20/11 > 1, which is insufficient; an argument exploiting the arithmetic structure of the speeds is required.",
+    "Do not directly generalize a proof for n < 11 to n = 11 without a complete argument for each generalization step.",
+    "If a Fourier / spectral method is proposed, the key estimates must be derived, not assumed.",
+    "Do not treat the conjecture itself or any equivalent reformulation as an available intermediate fact."
+  ]
+}

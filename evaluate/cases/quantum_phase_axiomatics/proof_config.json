@@ -1,0 +1,59 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "condensed matter physics / mathematical physics",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_nodes": [
+    {
+      "key": "landau_paradigm",
+      "statement": "Landau-Ginzburg paradigm for phases of matter: Phases are classified by their symmetry group G and the subgroup H that is spontaneously broken in the ordered phase. An order parameter is a local observable with zero expectation value in the disordered phase (G unbroken) and nonzero in the ordered phase (G broken to H). Classic examples: ferromagnet (G = Z_2 or SO(3) rotation, H = identity, order parameter = magnetization M), superconductor (G = U(1) electromagnetic, H = identity, order parameter = Cooper pair condensate). This paradigm successfully classifies all classical phases and many quantum phases involving symmetry breaking.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "ground_state_and_gap",
+      "statement": "A quantum many-body system on a d-dimensional lattice is described by a local Hamiltonian H (sum of terms acting on bounded regions). The ground state is the lowest-energy eigenstate. The spectral gap Delta = E_1 - E_0 (difference between first excited state and ground state energy) in the thermodynamic limit (system size -> infinity) characterizes whether the phase is 'gapped' (Delta > 0) or 'gapless' (Delta -> 0). Phase transition: a point in parameter space where the gap Delta closes as system size -> infinity. Chen-Gu-Wen (2010) definition: two gapped local Hamiltonians H_0 and H_1 are in the same quantum phase if they can be connected by a smooth path H(s), 0 <= s <= 1, of local gapped Hamiltonians.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "mathematical physics"
+    },
+    {
+      "key": "topological_insulators",
+      "statement": "Topological insulators (discovered experimentally and theoretically ~2007-2010): Band insulators with a bulk energy gap and symmetry-protected gapless edge (surface) states. The 3D topological insulator (e.g., Bi_2 Se_3) has a gapped bulk but gapless Dirac cone surface states protected by time-reversal symmetry. Key property: a topological insulator CANNOT be adiabatically connected to a trivial band insulator while preserving time-reversal symmetry — yet no local order parameter distinguishes them (they have the same symmetry group). This demonstrates that Landau's symmetry-breaking paradigm is insufficient to classify all quantum phases.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "kitaev_honeycomb",
+      "statement": "Kitaev honeycomb model: An exactly solvable spin-1/2 model on the honeycomb lattice with bond-dependent Ising interactions J_x, J_y, J_z and an optional time-reversal-breaking magnetic field h. The phase diagram contains: (A-phases) three gapped phases with Abelian anyonic excitations (toric code topological order), separated by gapless boundaries; (B-phase) in the presence of magnetic field, a gapped phase with non-Abelian Ising anyons (relevant for topological quantum computing). In both gapped phases the system has the same microscopic symmetry, yet they are physically distinct — Landau classification fails to distinguish them. The exactly solvable nature comes from a hidden Z_2 gauge structure.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    },
+    {
+      "key": "cgw_limitation",
+      "statement": "Limitation of the Chen-Gu-Wen (CGW) path-connectivity definition of quantum phases: It only applies to GAPPED systems. Important quantum phenomena outside this framework: (1) Quantum critical points — e.g., the transverse-field Ising model at h = J is gapless and represents a universality class (1+1d Ising CFT) that is not a 'phase' in the CGW sense but is physically distinct from any gapped phase. (2) Quantum spin liquids with algebraic correlations (gapless spin liquids) — candidate ground states of frustrated magnets with no magnetic order and gapless spectrum. (3) Strange metals, non-Fermi liquids. Any complete framework for quantum phases must address these gapless cases.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "condensed matter physics"
+    }
+  ],
+  "target": {
+    "key": "quantum_phase_axioms",
+    "statement": "Derive a minimal axiomatic framework — a set of axioms A_1, A_2, ..., A_k — for quantum phases of matter that: (1) subsumes the Landau-Ginzburg symmetry-breaking classification as a special case; (2) classifies gapped topological phases (topological insulators, topological order, SPT phases) without reducing to symmetry breaking; (3) applies to gapless systems including quantum critical points and quantum spin liquids; (4) produces computable invariants that distinguish any two inequivalent phases; (5) is falsifiable in the sense that a hypothetical new quantum system could in principle violate one of the axioms, demonstrating that it represents a genuinely new phase not covered by the framework.",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "mathematical physics"
+  },
+  "planning_constraints": [
+    "Do not use the Chen-Gu-Wen path-connectivity definition as an axiom itself — that is precisely what the framework is meant to improve upon or generalize.",
+    "The framework MUST handle gapless phases (quantum critical points, gapless spin liquids); an axiom system that only works for gapped systems is incomplete by the definition of the target.",
+    "Landau order parameters are demonstrably insufficient (topological insulators have no order parameter); the axioms must explain WHY topological phases exist and are distinct.",
+    "Do not assume all phases require an underlying symmetry group; topological order (e.g., toric code, Z_2 gauge theory) exists without any symmetry protection.",
+    "Each proposed axiom must be accompanied by a falsification criterion: provide a hypothetical Hamiltonian or scenario that would violate the axiom, showing the axiom is nontrivial.",
+    "The invariants produced by the axioms must in principle be computable from a given Hamiltonian — define the computational procedure, even if it is computationally hard.",
+    "If a proposed axiom system fails to classify one of the four known phase types (symmetry-broken / topological-order / SPT / gapless-critical), that is grounds for refutation — mark the axiom attempt as refuted and try again."
+  ]
+}

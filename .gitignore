@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+*.db
+.DS_Store
+
+# Local env files
+.env
+.env.local
+
+# Lean 4 build artifacts (keep source files tracked)
+lean_workspace/.lake/
+lean_workspace/**/*.olean
+
+# Benchmark/workspace runtime outputs
+evaluate/workspaces/runs/
+evaluate/workspaces/reports/
+evaluate/workspaces/nl_math_demo/
+evaluate/workspaces/*.log
+
+# Temporary case configs
+evaluate/cases/_tmp_alt_model/

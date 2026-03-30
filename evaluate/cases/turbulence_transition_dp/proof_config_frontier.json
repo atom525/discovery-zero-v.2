@@ -1,0 +1,63 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "fluid mechanics / nonlinear PDE",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_policy": "frontier_assisted",
+  "seed_nodes": [
+    {
+      "key": "nse_and_base_flow",
+      "statement": "Incompressible Navier-Stokes equations in pipe flow and the Hagen-Poiseuille base flow U_0(r) = (1 - r^2) z-hat are the governing equations.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "perturbation_energy",
+      "statement": "Exact perturbation energy equation: d/dt (||u'||^2 / 2) = - integral (u' v' dU_0/dr) dV - (1/Re) ||grad u'||^2.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "stability_facts",
+      "statement": "Hagen-Poiseuille flow is linearly stable for all Re, while Joseph's energy-stability threshold gives unconditional decay only below Re_E approximately 82.9.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "subcritical_transition_observation",
+      "statement": "Empirically the critical perturbation amplitude satisfies epsilon_c(Re) ~ Re^{-gamma} with gamma between about 1 and 2, but no first-principles derivation is known.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "fluid mechanics"
+    },
+    {
+      "key": "transient_growth_seed",
+      "statement": "Frontier seed: transient-growth theory for non-normal linearized shear-flow operators predicts large algebraic amplification, often with scaling G_max ~ Re^2 in pipe-flow-related settings. This may be used as a black box seed.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "hydrodynamic stability"
+    },
+    {
+      "key": "ssp_seed",
+      "statement": "Frontier seed: self-sustaining-process / lift-up mechanisms explain how streamwise vortices, streaks, and instabilities can form a nonlinear regeneration loop in subcritical shear flows. This may be used as a black-box mechanistic template.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "transition theory"
+    }
+  ],
+  "target": {
+    "key": "gamma_exponent",
+    "statement": "Derive from first principles using the incompressible Navier-Stokes equations the exact value of the exponent gamma such that the critical perturbation amplitude for subcritical transition in pipe flow scales as epsilon_c(Re) ~ Re^{-gamma} as Re -> infinity. The derivation must not use any empirical input; it must follow from the mathematical structure of the NSE perturbation equations and produce a definite value (or prove that no universal gamma exists).",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "fluid mechanics / mathematical physics"
+  },
+  "planning_constraints": [
+    "Frontier transient-growth and self-sustaining-process results may be used as black-box seeds.",
+    "You must still explain which final scaling step from those seeds to an exact gamma remains open or heuristic.",
+    "Do not treat gamma itself as an available frontier seed."
+  ]
+}

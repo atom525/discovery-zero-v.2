@@ -1,0 +1,31 @@
+{
+  "case_id": "homochirality_mechanism",
+  "display_name": "前生物同手性起源机制",
+  "source_proof_config": "proof_config.json",
+  "benchmark_scope": "Construct a complete prebiotic mechanism achieving |ee| > 0.999 from ee_0 = 0 under early-Earth conditions. The mechanism must explain the source of initial symmetry breaking AND its amplification to near-complete homochirality, with full kinetic analysis. No single known mechanism is sufficient; a novel combination or new mechanism is required.",
+  "tags": ["chemistry", "prebiotic", "homochirality", "kinetics", "open-problem", "frontier"],
+  "allow_refutation": false,
+  "model": "cds/Claude-4.6-opus",
+  "timeouts": {
+    "experiment": 180,
+    "decompose": 240,
+    "lean": 360
+  },
+  "lean_policy": {
+    "mode": "selective",
+    "enable_decomposition": false,
+    "enable_strict_lean": false,
+    "min_path_confidence": 0.70,
+    "max_grade_d_ratio": 0.30,
+    "allowed_strict_modes": ["direct_proof", "lemma"]
+  },
+  "planning_constraints": [
+    "The Frank model requires ee_0 != 0 as input; the mechanism must explain the source of initial chiral bias from a racemic state.",
+    "Do not assume any single known mechanism (CPL, Soai, Viedma, PVED) is sufficient; each has documented fundamental limitations.",
+    "CPL alone: anisotropy factor g ~ 0.01 places a hard physical ceiling far below 99.9% ee.",
+    "Soai reaction: requires anhydrous organozinc conditions not available prebiotically.",
+    "Viedma ripening: achieves crystal-level homochirality only, not molecular-level amino acid ee.",
+    "Any multi-step sequential mechanism must show environmental compatibility between successive steps.",
+    "Kinetic analysis must quantify the minimum initial ee_0 for Frank-type amplification and the timescale to reach 0.999."
+  ]
+}
