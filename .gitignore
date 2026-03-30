@@ -17,8 +17,9 @@ build/
 lean_workspace/.lake/
 lean_workspace/**/*.olean
 
-# Benchmark/workspace runtime outputs
-evaluate/workspaces/runs/
+# Benchmark/workspace runtime outputs (preserve showcase)
+evaluate/workspaces/runs/*
+!evaluate/workspaces/runs/homochirality_showcase/
 evaluate/workspaces/reports/
 evaluate/workspaces/nl_math_demo/
 evaluate/workspaces/*.log

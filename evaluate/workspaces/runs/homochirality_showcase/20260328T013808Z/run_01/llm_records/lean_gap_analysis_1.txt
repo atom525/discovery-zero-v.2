@@ -1,0 +1,17 @@
+
+
+```json
+{
+  "gap_type": "other",
+  "explanation": "The Lean source is incomplete — it cuts off mid-comment (after 'k₀[A]') and contains no theorem statements, definitions, or proofs. There is no actual Lean code to compile, so the error is a parse/syntax failure from an unterminated block comment or missing declarations, not a proof-level issue.",
+  "subgoals": [
+    "Define the state variables L, D, S, Δ, ee as functions of time (ℝ → ℝ) with S = L + D, Δ = L - D, ee = Δ / S.",
+    "State the Frank model ODEs as hypotheses: dL/dt = k₀*A + k₂*L*A - k_d*L - k_inh*L*D (and symmetric for D).",
+    "State the quasi-steady-state hypothesis: dS/dt = 0 (equivalently S is constant).",
+    "Derive dΔ/dt = (k₂*A - k_d)*Δ from the difference of the two ODEs (the k₀ and k_inh terms cancel or simplify).",
+    "Show dee/dt = (1/S)*dΔ/dt - (Δ/S²)*dS/dt = λ*ee using S constant.",
+    "For the full nonlinear ee³ term: re-derive including the inhibition contribution to dS/dt or Δ dynamics without the strict dS/dt=0 assumption, showing the cubic correction λ·ee·(1 - ee²)."
+  ],
+  "suggested_fix": "Complete the Lean file with actual definitions and a theorem. A minimal skeleton:\n\n```lean\nimport Mathlib\n\nnoncomputable section\n\nvariable (k₂ A k_d : ℝ) (S : ℝ) (hS : S ≠ 0)\nvariable (ee : ℝ → ℝ) (hee_diff : Differentiable ℝ ee)\n\n/-- The Frank model ee dynamics under QSSA. -/\ntheorem frank_ee_dynamics\n    (λ_def : k₂ * A - k_d = λ)\n    -- Hypothesis: the full ODE for ee is derived from the model\n    (h_ode : ∀ t, deriv ee t = λ * ee t * (1 - ee t ^ 2)) :\n    ∀ t, deriv ee t = λ * ee t * (1 - ee t ^ 2) := h_ode\n```\n\nThis is trivial as stated. To make it substantive:\n1. Introduce `L D : ℝ → ℝ` with their ODEs as hypotheses.\n2. Define `ee t = (L t - D t) / (L t + D t)`.\n3. Add hypothesis `∀ t, deriv (fun t => L t + D t) t = 0`.\n4. Use `deriv_div`, `deriv_sub`, `deriv_add` from Mathlib to compute `deriv ee t`.\n5. The key algebraic step is showing `[L][D] = S²(1 - ee²)/4` which makes the inhibition terms produce the `(1 - ee²)` factor. Use `field_simp` and `ring` to close the algebra.\n\nNote: The cubic form `λ·ee·(1-ee²)` arises only when the inhibition rate k_inh is specifically related to the other parameters (often k_inh = k₂*A/S in the standard Frank analysis). This relationship must appear as an explicit hypothesis."
+}
+```

@@ -54,10 +54,10 @@ def adapt_zero_graph_v2(
         if len(premises) == 1:
             fg.add_factor(
                 factor_id=eid,
-                operator_type=OperatorType.SOFT_IMPLICATION,
+                factor_type=OperatorType.SOFT_IMPLICATION,
                 premises=premises,
                 conclusions=[conclusion],
-                p1=p1,
+                p=p1,
                 p2=p2,
             )
             continue
@@ -67,16 +67,17 @@ def adapt_zero_graph_v2(
         synthetic_var_ids.add(mediator)
         fg.add_factor(
             factor_id=f"{eid}_conj",
-            operator_type=OperatorType.CONJUNCTION,
+            factor_type=OperatorType.CONJUNCTION,
             premises=premises,
             conclusions=[mediator],
+            p=1.0 - CROMWELL_EPS,
         )
         fg.add_factor(
             factor_id=eid,
-            operator_type=OperatorType.SOFT_IMPLICATION,
+            factor_type=OperatorType.SOFT_IMPLICATION,
             premises=[mediator],
             conclusions=[conclusion],
-            p1=p1,
+            p=p1,
             p2=p2,
         )
 
@@ -89,21 +90,33 @@ def adapt_zero_graph_v2(
         if not claim_vars:
             continue
         for a, b in combinations(claim_vars, 2):
+            relation_var = f"contra_rel_{eid_a}_{eid_b}_{a}_{b}"
+            if relation_var not in fg.variables:
+                fg.add_variable(relation_var, 0.5)
+            synthetic_var_ids.add(relation_var)
             fg.add_factor(
                 factor_id=f"contra_factor_{eid_a}_{eid_b}_{a}_{b}",
-                operator_type=OperatorType.CONTRADICTION,
-                premises=[a],
-                conclusions=[b],
+                factor_type=OperatorType.CONTRADICTION,
+                premises=[a, b],
+                conclusions=[],
+                p=1.0 - CROMWELL_EPS,
+                relation_var=relation_var,
             )
 
     for nid_a, nid_b in _detect_equivalences(graph):
         if nid_a not in fg.variables or nid_b not in fg.variables:
             continue
+        relation_var = f"equiv_rel_{nid_a}_{nid_b}"
+        if relation_var not in fg.variables:
+            fg.add_variable(relation_var, 0.5)
+        synthetic_var_ids.add(relation_var)
         fg.add_factor(
             factor_id=f"equiv_factor_{nid_a}_{nid_b}",
-            operator_type=OperatorType.EQUIVALENCE,
-            premises=[nid_a],
-            conclusions=[nid_b],
+            factor_type=OperatorType.EQUIVALENCE,
+            premises=[nid_a, nid_b],
+            conclusions=[],
+            p=1.0 - CROMWELL_EPS,
+            relation_var=relation_var,
         )
 
     return ZeroInferenceGraphV2(factor_graph=fg, synthetic_var_ids=synthetic_var_ids)

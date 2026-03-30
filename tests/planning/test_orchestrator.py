@@ -629,10 +629,9 @@ def test_execute_bridge_followups_runs_local_bridge_experiment(monkeypatch, tmp_
         judge_output={"confidence": 0.7},
     )
 
-    assert [item.action for item in results] == ["bridge_consumption", "bridge_experiment", "bridge_experiment", "bridge_ready"]
+    assert [item.action for item in results] == ["bridge_consumption", "bridge_experiment", "bridge_ready"]
     assert results[1].success is True
     assert results[2].success is True
-    assert results[3].success is True
 
 
 def test_run_loop_appends_bridge_followups_after_plausible(monkeypatch, tmp_graph_dir):

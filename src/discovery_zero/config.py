@@ -90,6 +90,13 @@ class ZeroConfig:
     llm_connect_timeout: float = _env_float("DISCOVERY_ZERO_LLM_CONNECT_TIMEOUT", 10.0)
     llm_pool_max_connections: int = _env_int("DISCOVERY_ZERO_LLM_POOL_MAX_CONNECTIONS", 10)
 
+    # Max output tokens per LLM request. 0 = no limit (use model default).
+    llm_max_output_tokens: int = _env_int("DISCOVERY_ZERO_MAX_OUTPUT_TOKENS", 16000)
+
+    # Auto-continue when model hits output limit (finish_reason="length").
+    # Value = max number of continuation requests (0 = disabled).
+    llm_auto_continue: int = _env_int("DISCOVERY_ZERO_LLM_AUTO_CONTINUE", 3)
+
     # Enable response_format: json_object / json_schema constrained decoding
     llm_structured_output: bool = _env_bool("DISCOVERY_ZERO_LLM_STRUCTURED_OUTPUT", True)
 

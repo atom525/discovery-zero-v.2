@@ -1,0 +1,73 @@
+Looking at this claim, I need to formalize the mathematical core: for the symmetric Frank reaction-diffusion system with equal diffusion coefficients, the dispersion relation for the chiral (symmetry-breaking) branch has its maximum growth rate at k=0, so no Turing instability occurs.
+
+The key mathematical fact is: if σ₊(k²) = σ₊(0) - D·k² for some D > 0 (equal diffusion), then σ₊ is maximized at k=0. This is because Turing instability requires unequal diffusion coefficients.
+
+Let me formalize the essential mathematical content — that a linear function of k² with negative slope is maximized at k²=0.
+
+```lean
+import Mathlib
+
+/--
+For the symmetric Frank RD system with equal diffusion coefficient D > 0,
+the growth rate of the chiral branch is σ₊(k²) = σ₊(0) - D·k².
+This is a decreasing function of k², so the maximum is at k = 0.
+Hence no Turing (finite-wavenumber) instability arises.
+-/
+
+-- Core mathematical lemma: a linear function with negative slope on [0,∞) is maximized at 0
+theorem no_turing_equal_diffusion
+    (σ₀ : ℝ) (D : ℝ) (hD : 0 < D)
+    (σ : ℝ → ℝ) (hσ : ∀ q : ℝ, 0 ≤ q → σ q = σ₀ - D * q) :
+    ∀ q : ℝ, 0 ≤ q → σ q ≤ σ 0 := by
+  intro q hq
+  rw [hσ q hq, hσ 0 le_rfl]
+  simp
+  exact mul_nonneg (le_of_lt hD) hq
+
+-- The maximizer is unique: σ(q) = σ(0) implies q = 0
+theorem no_turing_equal_diffusion_unique
+    (σ₀ : ℝ) (D : ℝ) (hD : 0 < D)
+    (σ : ℝ → ℝ) (hσ : ∀ q : ℝ, 0 ≤ q → σ q = σ₀ - D * q) :
+    ∀ q : ℝ, 0 ≤ q → σ q = σ 0 → q = 0 := by
+  intro q hq heq
+  rw [hσ q hq, hσ 0 le_rfl] at heq
+  simp at heq
+  rcases mul_eq_zero.mp heq with hD0 | hq0
+  · exact absurd hD0 (ne_of_gt hD)
+  · exact hq0
+
+-- Corollary: strictly decreasing on (0, ∞), so no finite-wavenumber instability
+theorem no_finite_wavenumber_instability
+    (σ₀ : ℝ) (D : ℝ) (hD : 0 < D)
+    (σ : ℝ → ℝ) (hσ : ∀ q : ℝ, 0 ≤ q → σ q = σ₀ - D * q) :
+    ∀ q : ℝ, 0 < q → σ q < σ 0 := by
+  intro q hq
+  have hq_nn : (0 : ℝ) ≤ q := le_of_lt hq
+  rw [hσ q hq_nn, hσ 0 le_rfl]
+  simp
+  exact mul_pos hD hq
+
+-- The gain factor G > 1 when F > 1, S > 1, p > 0 (from the chiral ratchet context)
+theorem chiral_ratchet_gain_gt_one
+    (F S p : ℝ) (hF : 1 < F) (hS : 1 < S) (hp : 0 < p) (hp1 : p < 1) :
+    let G := 1 + (F - 1) * (S - 1) * p / (1 + (F - 1) * (S - 1) * p)
+    1 < G := by
+  simp only
+  have hFS : 0 < (F - 1) * (S - 1) * p := by
+    apply mul_pos
+    apply mul_pos
+    · linarith
+    · linarith
+    · exact hp
+  have hdenom : 0 < 1 + (F - 1) * (S - 1) * p := by linarith
+  rw [lt_add_iff_pos_right]
+  exact div_pos hFS hdenom
+```y linarith
+    have : k ^ 2 = 0 := by
+      rcases mul_eq_zero.mp this with h1 | h1
+      · linarith
+      · exact h1
+    exact pow_eq_zero_iff (by norm_num : 2 ≠ 0) |>.mp this
+  · intro h
+    simp [h]
+```

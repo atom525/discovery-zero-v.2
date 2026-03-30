@@ -158,7 +158,10 @@ def test_materialize_filters_risk_from_non_risk_conclusions():
             BridgeProposition(id="B", statement="Bridge lemma", role="bridge", grade="B", depends_on=["S", "R"]),
             BridgeProposition(id="T", statement="Main target", role="target", grade="B", depends_on=["B", "R"]),
         ],
-        chain=[],
+        chain=[
+            BridgeReasoningStep(id="S1", statement="Derive bridge", uses=["S"], concludes=["B"], grade="B"),
+            BridgeReasoningStep(id="S2", statement="Conclude target", uses=["B"], concludes=["T"], grade="B"),
+        ],
         summary="risk filtering test",
     )
     node_map = materialize_bridge_nodes(graph, plan, target_node_id=target.id)
@@ -180,7 +183,7 @@ def test_validate_bridge_plan_autofixes_missing_target_role():
         "target_statement": "Main target",
         "propositions": [
             {"id": "P1", "statement": "Seed", "role": "seed", "grade": "A", "depends_on": []},
-            {"id": "P2", "statement": "Bridge step", "role": "bridge", "grade": "B", "depends_on": ["P1"]},
+            {"id": "P2", "statement": "Main target", "role": "bridge", "grade": "B", "depends_on": ["P1"]},
         ],
         "chain": [
             {"id": "S1", "statement": "Derive bridge", "uses": ["P1"], "concludes": ["P2"], "grade": "B"},

@@ -979,7 +979,7 @@ def _run_case_once_mcts(
     llm_record_dir = run_dir / "llm_records"
     _save_json(resolved_config_path, resolved_config)
 
-    model = resolved_config.get("model") or os.environ.get("DISCOVERY_ZERO_LLM_MODEL", "gpt-5.2")
+    model = resolved_config.get("model") or os.environ.get("DISCOVERY_ZERO_LLM_MODEL") or CONFIG.llm_model
     resolved_config["model"] = model
     if resolved_config.get("lean_workspace"):
         os.environ["DISCOVERY_ZERO_LEAN_WORKSPACE"] = str(Path(resolved_config["lean_workspace"]).resolve())
@@ -1262,7 +1262,7 @@ def run_case_once(
     llm_record_dir = run_dir / "llm_records"
     _save_json(resolved_config_path, resolved_config)
 
-    model = resolved_config.get("model") or os.environ.get("DISCOVERY_ZERO_LLM_MODEL", "gpt-5.2")
+    model = resolved_config.get("model") or os.environ.get("DISCOVERY_ZERO_LLM_MODEL") or CONFIG.llm_model
     resolved_config["model"] = model
     if resolved_config.get("lean_workspace"):
         os.environ["DISCOVERY_ZERO_LEAN_WORKSPACE"] = str(Path(resolved_config["lean_workspace"]).resolve())
@@ -2236,6 +2236,7 @@ def run_suite(
     output_root: Optional[Path] = None,
     max_parallel: int = 1,
     resume: bool = False,
+    resume_dir: Optional[Path] = None,
     experience_buffer: Optional[ExperienceBuffer] = None,
 ) -> SuiteRunResult:
     """
@@ -2247,16 +2248,24 @@ def run_suite(
         output_root: Override the output root directory.
         max_parallel: Number of cases to run in parallel (default 1 = sequential).
         resume: If True, skip cases that already have a completed summary.json.
+        resume_dir: Path to a previous suite_run_dir to resume from.
+                    Implies resume=True.
     """
     import concurrent.futures as _futures
     import threading as _threading
 
+    if resume_dir is not None:
+        resume = True
+
     suite = load_suite_config(suite_config_path)
     cases = [load_case_config(path) for path in suite.case_files]
     evaluation_root = output_root or DEFAULT_EVALUATION_ROOT
-    suite_run_dir = _unique_directory(
-        evaluation_root / "runs" / suite.suite_id / _timestamp_slug()
-    )
+    if resume_dir is not None:
+        suite_run_dir = Path(resume_dir).resolve()
+    else:
+        suite_run_dir = _unique_directory(
+            evaluation_root / "runs" / suite.suite_id / _timestamp_slug()
+        )
     reports_dir = evaluation_root / "reports" / suite.suite_id / suite_run_dir.name
     suite_run_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)

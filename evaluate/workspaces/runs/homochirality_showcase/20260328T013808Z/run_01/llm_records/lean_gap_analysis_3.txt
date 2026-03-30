@@ -1,0 +1,15 @@
+```json
+{
+  "gap_type": "other",
+  "explanation": "The Lean source is truncated mid-definition: the theorem `ee_c_nonpos_of_large_C` is cut off after the hypothesis `hβ_upper : β * (1 - α)` with no comparison operator, right-hand side, closing parenthesis, colon-for-conclusion, or proof body. This is a parse/syntax error caused by incomplete source text, not a semantic type mismatch or tactic failure.",
+  "subgoals": [
+    "Complete the hypothesis `hβ_upper`: e.g., `hβ_upper : β * (1 - α) < 1` (which ensures the denominator `1 - β*(1-α)` is positive).",
+    "Add the hypothesis encoding the 'large C' condition: `hβα_le : β * (1 + α) ≤ 1`.",
+    "State the conclusion: `: ee_c β α ≤ 0`.",
+    "Provide the proof body for `ee_c_nonpos_of_large_C`.",
+    "Add a second theorem `ee_c_valid` covering the 0 < ee_c < 1 case with hypotheses `1/(1+α) < β` and `β < 1/(1-α)`.",
+    "Prove the companion theorem `ee_c_pos_and_lt_one` that under `β * (1 + α) > 1` and `β * (1 - α) < 1` we get `0 < ee_c β α ∧ ee_c β α < 1`."
+  ],
+  "suggested_fix": "Complete the truncated source. A minimal corrected skeleton:\n\n```lean\ntheorem ee_c_nonpos_of_large_C {β α : ℝ} (hα0 : 0 < α) (hα1 : α < 1)\n    (hβ_pos : 0 < β)\n    (hβ_upper : β * (1 - α) < 1)\n    (hβα_le : β * (1 + α) ≤ 1) :\n    ee_c β α ≤ 0 := by\n  unfold ee_c\n  apply div_nonpos_of_nonpos_of_nonneg\n  · linarith\n  · linarith\n\ntheorem ee_c_valid {β α : ℝ} (hα0 : 0 < α) (hα1 : α < 1)\n    (hβ_lower : 1 < β * (1 + α))\n    (hβ_upper : β * (1 - α) < 1) :\n    0 < ee_c β α ∧ ee_c β α < 1 := by\n  unfold ee_c\n  constructor\n  · apply div_pos\n    · linarith\n    · linarith\n  · rw [div_lt_one (by linarith : 0 < 1 - β * (1 - α))]\n    nlinarith\n```\n\nKey points:\n- `div_nonpos_of_nonpos_of_nonneg` handles the ≤ 0 case (non-positive numerator, non-negative denominator).\n- `div_pos` handles positivity when both numerator and denominator are positive.\n- `div_lt_one` reduces `ee_c < 1` to `β*(1+α) - 1 < 1 - β*(1-α)`, which simplifies to `2*β*α < 2`, provable via `nlinarith` from `β*(1-α) < 1` and `0 < α`.\n- If `nlinarith` struggles, factor as: from `β*(1-α) < 1` we get `β < 1/(1-α)`, so `β*α < α/(1-α)`, then `2*β*α < 2α/(1-α) < 2` when `α < 1`."
+}
+```

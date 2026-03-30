@@ -1,0 +1,75 @@
+{
+  "model": "cds/Claude-4.6-opus",
+  "domain": "prebiotic chemistry / chemical kinetics",
+  "lean_workspace": null,
+  "lean_boundary_policy": null,
+  "seed_policy": "frontier_assisted",
+  "seed_nodes": [
+    {
+      "key": "ee_and_homochirality_fact",
+      "statement": "Enantiomeric excess ee measures chirality bias; biological systems are near-homochiral while abiotic syntheses such as Miller-Urey are racemic.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    },
+    {
+      "key": "frank_model",
+      "statement": "Frank-type autocatalysis can amplify a nonzero initial ee to near-complete homochirality.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "frank_model_symmetry_barrier",
+      "statement": "Frank model alone cannot break perfect symmetry from ee_0 = 0 in a deterministic racemic closed system.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemical kinetics"
+    },
+    {
+      "key": "stochastic_and_prebiotic_constraints",
+      "statement": "Finite-volume stochastic fluctuations can create tiny chiral bias, but macroscopic first-passage times are generally too long; prebiotic mechanisms must remain early-Earth compatible.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "chemistry"
+    },
+    {
+      "key": "soai_seed",
+      "statement": "Frontier mechanism seed: the Soai reaction is a real chemical system with extreme asymmetric autocatalysis and large ee amplification, but it requires anhydrous organozinc chemistry and is not directly prebiotic.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "asymmetric autocatalysis"
+    },
+    {
+      "key": "viedma_seed",
+      "statement": "Frontier mechanism seed: Viedma ripening can drive crystal-level homochirality by grinding and dissolution-recrystallization cycles, but does not by itself establish molecular-level amino-acid homochirality.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "crystallization kinetics"
+    },
+    {
+      "key": "cpl_seed",
+      "statement": "Frontier mechanism seed: circularly polarized light can induce small chiral biases in photochemistry, but the anisotropy factor is too small to reach |ee| > 0.999 without further amplification.",
+      "belief": 1.0,
+      "state": "proven",
+      "domain": "photochemistry"
+    }
+  ],
+  "target": {
+    "key": "prebiotic_homochirality",
+    "statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+    "belief": 0.1,
+    "state": "unverified",
+    "domain": "prebiotic chemistry"
+  },
+  "planning_constraints": [
+    "Frontier homochirality mechanisms may be used as seeds, but you must show what incompatibility or missing amplification step remains.",
+    "Do not claim success merely by listing Soai, Viedma, CPL, or PVED; explain how the combined route closes or fails to close the early-Earth gap.",
+    "Any imported frontier mechanism should be translated into explicit kinetic bridge propositions."
+  ],
+  "workspace": "/personal/Zero/evaluate/workspaces/runs/two_cases_mcts_46_lrc_homochirality/20260328T013808Z/homochirality_mechanism/run_01",
+  "experiment_timeout": 180,
+  "decompose_timeout": 240,
+  "lean_timeout": 360,
+  "benchmark_scope": "Construct a complete prebiotic mechanism achieving |ee| > 0.999 from ee_0 = 0 under early-Earth conditions. The mechanism must explain the source of initial symmetry breaking AND its amplification to near-complete homochirality, with full kinetic analysis. No single known mechanism is sufficient; a novel combination or new mechanism is required."
+}

@@ -1,0 +1,18 @@
+{
+  "stdout": "======================================================================\nVerification: S = k_hydrolysis(heterochiral)/k_hydrolysis(homochiral)\nClaim: S ≈ 2-10 for short peptides (n=4-10)\n======================================================================\n\n--- Model 1: Protection factor from backbone burial ---\nS range from Model 1: 1.05 - 7.58\nS median from Model 1: 1.79\n\n--- Model 2: H-bond exchange protection factor model ---\nS range from Model 2: 1.00 - 1.43\nS median from Model 2: 1.08\n\n--- Model 3: Conformational stability / unfolding model ---\nS range from Model 3: 1.00 - 1.84\nS median from Model 3: 1.09\n\n--- Model 4: Literature-calibrated estimates ---\nLiterature-calibrated S estimates by peptide length:\n  n=4: S ≈ 1.1 – 2.0\n  n=5: S ≈ 1.2 – 3.0\n  n=6: S ≈ 1.5 – 4.0\n  n=7: S ≈ 1.5 – 5.0\n  n=8: S ≈ 2.0 – 7.0\n  n=9: S ≈ 2.0 – 8.0\n  n=10: S ≈ 2.0 – 10.0\n\n======================================================================\nAGGREGATE ANALYSIS\n======================================================================\n\nAll model S values: min=1.00, max=7.58\nMedian: 1.13\nMean: 1.48\n25th percentile: 1.05\n75th percentile: 1.32\n\nFraction of model estimates in claimed range [2,10]: 0.120\nFraction within 2x of claimed range [1,20]: 1.000\n\n--- Physical consistency checks ---\nModel 1 (thermodynamic): 70/175 in [2,10]\nModel 2 (H-bond protection): 0/350 in [2,10]\nModel 3 (conformational): 0/56 in [2,10]\n\n--- Critical assessment of S=2 for n=4 ---\nModel 3 S values for n=4: 1.26 - 1.84\n  (Core residues contributing to stability: 1 = 1)\nModel 3 S values for n=10: 1.00 - 1.31\n\n======================================================================\nCONCLUSION\n======================================================================\nCan achieve S=2: True\nCan achieve S=10: False\nFraction of parameter space in [2,10]: 0.120\nFraction of parameter space in [1,20]: 1.000\nPassed: False\n{\"passed\": false, \"trials\": 581, \"max_error\": 4.869818141643973, \"counterexample\": {\"issue\": \"S values from physical models don't consistently fall in [2,10]\", \"model1_median\": 1.7883584691788448, \"model2_median\": 1.0817776539426025, \"model3_median\": 1.0868117105879753}, \"summary\": \"Three physical models yield S ranges overlapping the claimed 2-10 range. Model 1 (thermodynamic): median S=1.8 Model 2 (H-bond): median S=1.1 Model 3 (conformational): median S=1.1 12% of parameter space in [2,10]. Claim range is not fully supported by physical models.\", \"computed_value\": \"Model medians: M1=1.79, M2=1.08, M3=1.09; 12% in [2,10]\", \"claimed_value\": \"S \\u2248 2-10 for n=4-10\"}\n",
+  "stderr": "",
+  "payload": {
+    "passed": false,
+    "trials": 581,
+    "max_error": 4.869818141643973,
+    "counterexample": {
+      "issue": "S values from physical models don't consistently fall in [2,10]",
+      "model1_median": 1.7883584691788448,
+      "model2_median": 1.0817776539426025,
+      "model3_median": 1.0868117105879753
+    },
+    "summary": "Three physical models yield S ranges overlapping the claimed 2-10 range. Model 1 (thermodynamic): median S=1.8 Model 2 (H-bond): median S=1.1 Model 3 (conformational): median S=1.1 12% of parameter space in [2,10]. Claim range is not fully supported by physical models.",
+    "computed_value": "Model medians: M1=1.79, M2=1.08, M3=1.09; 12% in [2,10]",
+    "claimed_value": "S ≈ 2-10 for n=4-10"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "stdout": "{\"passed\": false, \"trials\": 1500, \"max_error\": 0.8453566150288059, \"counterexample\": {\"test\": 5, \"n_residues\": 5, \"P_CISS\": 0.4948470281636004, \"Delta_E_meV\": 34.638603086402924, \"ee\": 0.5849407394589747}, \"summary\": \"1470/1500 total trials passed. The CISS-based enantioselective adsorption claim is thermodynamically plausible: ~10% ee requires Delta_E ~ 1-5 meV at 300K, achievable with CISS spin polarization P~0.5 and surface exchange coupling J~20-80 meV. Magnetization reversal symmetry is exact. CISS gives ~100-2000x larger ee than CPL. Details: test1_thermodynamic: 200/200 passed; test2_algebraic: 200/200 passed; test3_energy_range: 200/200 passed; test4_reversal_symmetry: 200/200 passed; test5_length_scaling: 170/200 passed; test6_kinetic: 200/200 passed; test7_comparison: 200/200 passed; test8_boundary: 100/100 passed\"}\n",
+  "stderr": "",
+  "result": {
+    "passed": false,
+    "trials": 1500,
+    "max_error": 0.8453566150288059,
+    "counterexample": {
+      "test": 5,
+      "n_residues": 5,
+      "P_CISS": 0.4948470281636004,
+      "Delta_E_meV": 34.638603086402924,
+      "ee": 0.5849407394589747
+    },
+    "summary": "1470/1500 total trials passed. The CISS-based enantioselective adsorption claim is thermodynamically plausible: ~10% ee requires Delta_E ~ 1-5 meV at 300K, achievable with CISS spin polarization P~0.5 and surface exchange coupling J~20-80 meV. Magnetization reversal symmetry is exact. CISS gives ~100-2000x larger ee than CPL. Details: test1_thermodynamic: 200/200 passed; test2_algebraic: 200/200 passed; test3_energy_range: 200/200 passed; test4_reversal_symmetry: 200/200 passed; test5_length_scaling: 170/200 passed; test6_kinetic: 200/200 passed; test7_comparison: 200/200 passed; test8_boundary: 100/100 passed"
+  }
+}

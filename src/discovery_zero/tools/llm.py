@@ -369,11 +369,22 @@ def chat_completion(
     )
     t = transport or get_default_transport()
 
+    try:
+        from discovery_zero.config import CONFIG as _cfg
+        _max_output_tokens = _cfg.llm_max_output_tokens
+        _auto_continue_limit = _cfg.llm_auto_continue
+    except Exception:
+        _max_output_tokens = 16000
+        _auto_continue_limit = 3
+
     payload: Dict[str, Any] = {
         "model": config.model,
         "messages": messages,
         "n": n,
     }
+
+    if _max_output_tokens > 0:
+        payload["max_tokens"] = _max_output_tokens
 
     if not (config.model.startswith("gpt-5") and temperature == 0.0):
         payload["temperature"] = temperature
@@ -476,6 +487,51 @@ def chat_completion(
         usage = response.get("usage", {})
         budget.record(usage, model=config.model, skill=skill, node_id=node_id)
 
+    # --- Auto-continuation on truncation (finish_reason == "length") ---
+    if n == 1 and _auto_continue_limit > 0 and response_format is None:
+        accumulated_text = extract_text_content(response)
+        continuation_round = 0
+        while continuation_round < _auto_continue_limit:
+            fr = (response.get("choices") or [{}])[0].get("finish_reason", "stop")
+            if fr != "length":
+                break
+            continuation_round += 1
+            logger.info("Output truncated (finish_reason=length), auto-continuing (%d/%d)",
+                        continuation_round, _auto_continue_limit)
+            cont_messages = list(messages) + [
+                {"role": "assistant", "content": accumulated_text},
+                {"role": "user", "content": "Continue from where you left off. Do not repeat what you already wrote."},
+            ]
+            cont_payload: Dict[str, Any] = {
+                "model": config.model,
+                "messages": cont_messages,
+                "n": 1,
+            }
+            if _max_output_tokens > 0:
+                cont_payload["max_tokens"] = _max_output_tokens
+            if not (config.model.startswith("gpt-5") and temperature == 0.0):
+                cont_payload["temperature"] = temperature
+            try:
+                response = t.post_json(
+                    url, cont_payload,
+                    timeout=float(timeout),
+                    headers=_auth_headers(config.api_key),
+                )
+            except TransportError as exc:
+                logger.warning("Auto-continue request failed: %s", exc)
+                break
+            chunk_text = extract_text_content(response)
+            accumulated_text += chunk_text
+            if budget is not None:
+                cont_usage = response.get("usage", {})
+                budget.record(cont_usage, model=config.model, skill=skill, node_id=node_id)
+
+        if continuation_round > 0:
+            response = _make_single_text_response(accumulated_text, response)
+            if stream_record_path is not None:
+                stream_record_path.parent.mkdir(parents=True, exist_ok=True)
+                stream_record_path.write_text(accumulated_text, encoding="utf-8")
+
     if n == 1:
         return response
 
@@ -488,6 +544,17 @@ def chat_completion(
         single["choices"] = [choice]
         result.append(single)
     return result
+
+
+def _make_single_text_response(text: str, base_response: Dict[str, Any]) -> Dict[str, Any]:
+    """Build a synthetic response dict with concatenated text and finish_reason=stop."""
+    resp = dict(base_response)
+    resp["choices"] = [{
+        "index": 0,
+        "message": {"role": "assistant", "content": text},
+        "finish_reason": "stop",
+    }]
+    return resp
 
 
 # ------------------------------------------------------------------ #

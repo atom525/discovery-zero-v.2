@@ -33,7 +33,7 @@ packages = ["src/discovery_zero"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src", "/root/.openclaw/Gaia"]
+pythonpath = ["src", "."]
 markers = [
     "llm: tests that require real LLM endpoint credentials",
     "lean: tests that require Lean toolchain/runtime",

@@ -1,0 +1,258 @@
+
+
+I'll analyze the route carefully before producing the bridge plan.
+
+## Natural Language Analysis
+
+The proposed route is a **Chiral Ratchet** mechanism with three stages:
+
+1. **Initial symmetry breaking**: CPL + stochastic fluctuations produce ee₀ ~ 10⁻⁴–10⁻³
+2. **Iterative amplification via wet-dry cycling**: Enantioselective oligomerization (fidelity F > 1) + differential hydrolysis of heterochiral vs homochiral oligomers (selectivity S > 1) + monomer recycling creates a geometric gain per cycle
+3. **Final push to ee > 0.999**: Either the ratchet alone or coupling to Frank-type autocatalysis once ee is high enough
+
+### Key issues flagged by judge:
+- **Gain formula inconsistency** between Steps 3 and 4
+- **Monomer recycling problem**: hydrolysis of heterochiral oligomers returns *both* L and D monomers, partially negating enrichment. The actual enrichment comes from differential *retention* of homochiral oligomers (which sequester majority enantiomer)
+- **Constant-G assumption** breaks down at higher ee
+- **p_n overestimate**: for near-racemic pools, all-homochiral fraction is ~(0.5)^n × oligomer yield, much less than 0.1
+- **F values** may be optimistic
+- **Epimerization** during oligomerization ignored
+
+### Structure of the bridge plan:
+
+I need to decompose into:
+- **Seeds**: established facts (CPL, Frank, stochastic fluctuations, wet-dry environments, amino acid availability)
+- **New bridge propositions**: the chiral ratchet mechanism, the gain formula, the mass-balance argument
+- **Experimentally testable claims**: F values, S values, p_n values, single-cycle ee gain
+- **Risk propositions**: the monomer recycling accounting problem, F being sufficient, constant-G validity
+- **Target**: the final mechanism claim
+
+Let me now build the explicit propositions and chain.
+
+The key novelty is the **mass-balance ratchet mechanism** where the critical insight is: homochiral oligomers are *retained* (resist hydrolysis), sequestering majority-enantiomer monomers out of the pool, while heterochiral oligomers hydrolyze and return near-racemic monomers. The *net* effect is that the free monomer pool becomes depleted in the majority enantiomer BUT the *total* system (free + sequestered) is enriched toward the majority enantiomer in the oligomer phase. Over cycles, the surviving oligomer population becomes increasingly homochiral.
+
+Wait — the judge's concern is more fundamental. Let me think about this carefully.
+
+Consider one cycle:
+- Start: N_L free L-monomers, N_D free D-monomers, ee = (N_L - N_D)/(N_L + N_D) = ε > 0
+- Dry phase: oligomerization occurs. Homochiral oligomers (all-L, all-D) form preferentially (F > 1). Also heterochiral oligomers form.
+- Selection: homochiral oligomers survive better (S > 1). Heterochiral oligomers hydrolyze, returning monomers.
+- The enrichment mechanism: all-L oligomers sequester L-monomers. All-D oligomers sequester D-monomers. But there are more all-L oligomers (because ee > 0 and the all-L rate ~ [L]^n). So more L is sequestered in stable oligomers than D. The hydrolyzed heterochiral oligomers return a near-racemic mix. So the FREE monomer pool actually gets slightly more D-rich... but the OLIGOMER pool is strongly L-rich. The question is: what happens next cycle? If next cycle's oligomerization draws from the free pool, ee of free pool went DOWN. This is the recycling problem.
+
+The resolution: you have to track the TOTAL system. The surviving homochiral oligomers from cycle 1 persist into cycle 2. They can serve as templates or simply accumulate. If we track ee of the entire system (free + oligomeric), it stays constant (mass conservation). But if we track ee of the *surviving oligomer population* specifically, it grows.
+
+The actual mechanism that works is: **selective destruction of the minority enantiomer's oligomers**. Since there are fewer all-D oligomers than all-L oligomers, and heterochiral oligomers are destroyed, each cycle removes more D (in heterochiral oligomers) than L from the oligomer pool. But wait — heterochiral oligomers contain both L and D roughly equally.
+
+I think the correct framing is: the ratchet works not by enriching the monomer pool directly, but by **selectively accumulating homochiral oligomers** across cycles, with the oligomer population becoming increasingly dominated by the majority enantiomer. The monomer pool may actually decrease over time as material gets locked into stable homochiral oligomers.
+
+This is actually closer to a **Viedma-ripening analog for oligomers**: the homochiral oligomers of the majority enantiomer accumulate, while heterochiral and minority-homochiral oligomers get recycled.
+
+Let me now build the propositions acknowledging these subtleties.
+
+```json
+{
+  "target_statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+  "propositions": [
+    {
+      "id": "P1",
+      "statement": "Enantiomeric excess ee = (L−D)/(L+D) measures chirality bias; biological systems are near-homochiral (|ee| ≈ 1) while abiotic syntheses such as Miller-Urey are racemic (ee ≈ 0).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node 548fe6dcc856.",
+      "formalization_notes": "Definition; directly formalizable.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P2",
+      "statement": "Circularly polarized light (CPL) from astronomical sources (e.g., reflection nebulae in star-forming regions) can induce small enantiomeric excesses in amino acid photolysis with anisotropy factor |g| ~ 10⁻⁴, yielding |ee₀| ~ 10⁻⁴ in irradiated racemic mixtures. This is insufficient alone for |ee| > 0.999 but provides a deterministic, spatially coherent initial chiral bias without assuming any pre-existing ee.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node 0d0ecbf77b31. Experimentally established (Meierhenrich et al. 2005, de Marcellus et al. 2011).",
+      "formalization_notes": "Quantitative bound on |g| from CD spectroscopy of amino acids.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P3",
+      "statement": "Finite-volume stochastic fluctuations in a compartment with N chiral molecules create a random chiral bias of order δee ~ N^{−1/2}. For N ~ 10⁶ (femtoliter to picoliter droplets at μM–mM concentration), δee ~ 10⁻³. This bias adds to any deterministic bias (e.g., from CPL) and can dominate in small compartments.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node 262466e736fa. Standard statistical mechanics.",
+      "formalization_notes": "Follows from central limit theorem on binomial partition of N molecules.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P4",
+      "statement": "Frank-type autocatalysis with mutual inhibition (d[L]/dt = k₀[A] + k₂[L][A] − k_d[L] − k_inh[L][D], symmetric for D) can amplify a nonzero initial ee to near-complete homochirality, provided the threshold ratio R = k₂[A]/k_d > 1. The saturation ee is ee_sat = √(1 − 1/R²).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node 6f8280fc18f1 / 0d14fbde351a. Frank 1953; standard dynamical systems result.",
+      "formalization_notes": "Lyapunov / bifurcation analysis of the Frank ODE system. Directly formalizable.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P5",
+      "statement": "Frank model alone cannot break perfect symmetry from ee_0 = 0 in a deterministic racemic closed system. The Z₂ symmetry L↔D is exact, so the racemic fixed point remains valid (though unstable for R > 1).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node a079be33d38a.",
+      "formalization_notes": "Symmetry argument; formalizable.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P6",
+      "statement": "Wet-dry cycling environments (terrestrial hot springs, tidal pools, hydrothermal pore systems subject to periodic flooding) were geologically common on early Earth (~4 Gya). These environments provide periodic concentration (dry phase) and dilution (wet phase) with cycle periods τ_cycle ~ 12 h (diurnal) to ~14 d (tidal), temperatures 25–80°C, and amino acid concentrations reaching mM during dry phases from μM during wet phases (concentration factor 10²–10⁴).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified. Well-established in prebiotic chemistry literature (Damer & Deamer 2020, Ross & Deamer 2016).",
+      "formalization_notes": "Environmental boundary conditions; parameter ranges.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P7",
+      "statement": "Amino acids at μM–mM concentrations were plausibly available on early Earth from endogenous synthesis (Miller-Urey type reactions in reducing atmospheres or hydrothermal systems), exogenous delivery (meteorites such as Murchison contain diverse amino acids at ppm levels, interplanetary dust particles), and hydrothermal vent synthesis.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified. Standard prebiotic chemistry.",
+      "formalization_notes": "Parameter seed for [A] in kinetic models.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P8",
+      "statement": "The Soai reaction demonstrates that extreme asymmetric autocatalysis with ee amplification from ~10⁻⁵ to >0.99 in a single reaction is chemically possible, but requires anhydrous organozinc chemistry incompatible with aqueous early-Earth conditions.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node a2568c0dddc7. Proves the concept but not the prebiotic realization.",
+      "formalization_notes": "",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P9",
+      "statement": "Viedma ripening can drive crystal-level homochirality through grinding and dissolution-recrystallization cycles in conglomerate-forming systems, but does not by itself establish molecular-level amino acid homochirality in solution.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": "Verified node bb8216eaf95c.",
+      "formalization_notes": "",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P10",
+      "statement": "Combined initial symmetry breaking: On early Earth, CPL provides a deterministic bias |ee_CPL| ~ 10⁻⁴ with a definite sign. In small compartments (femtoliter residual volumes during dry phases, N ~ 10³–10⁶ molecules), stochastic fluctuations add δee ~ N^{−1/2} ~ 10⁻³–3×10⁻². The combined initial bias is |ee_init| ~ 10⁻³–10⁻², with sign coherently set by CPL across spatially correlated regions. This does not require any pre-existing ee.",
+      "role": "bridge",
+      "grade": "B",
+      "depends_on": ["P2", "P3", "P5", "P6"],
+      "notes": "The combination of deterministic CPL bias + stochastic amplification in small compartments is the symmetry-breaking step. The B grade reflects that the quantitative combination and the assumption of spatial coherence of CPL-set sign across many compartments is a reasonable structural bridge but not directly checkable without specifying geometry.",
+      "formalization_notes": "Could be formalized as: given CPL bias ε_det and compartment size N, the probability that the net bias has the CPL-determined sign is Φ(ε_det·√N), which exceeds 0.5 for any ε_det > 0.",
+      "experiment_notes": "Testable by measuring ee distribution across many small compartments after CPL irradiation."
+    },
+    {
+      "id": "P11",
+      "statement": "Homochiral kinetic preference in amino acid oligomerization (Chiral Fidelity Ratio F): For amino acid condensation on mineral surfaces or in dry-phase reactions, the rate of extending an oligopeptide with a monomer of the same chirality as the terminal residue exceeds the rate of heterochiral extension by a factor F > 1. Literature reports range from F ≈ 1.2 to F ≈ 5 depending on activation chemistry, mineral catalyst, and amino acid identity. Specific claims: (a) Brack and Orgel (1975) observed stereoselectivity in polymerization of activated amino acids. (b) Hitz and Luisi (2004) reported homochiral preference in fragment condensation. (c) Montmorillonite-catalyzed oligomerization shows modest stereoselectivity (F ~ 1.5–3).",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": ["P7"],
+      "notes": "This is a critical empirical parameter. The specific value of F matters enormously for the mechanism's viability. The literature values are contested and may be lower than claimed. Grade C because the exact value must be confirmed by direct experimental measurement under the proposed conditions.",
+      "formalization_notes": "F enters the gain formula directly. The mechanism requires F > 1; the timescale depends sensitively on F.",
+      "experiment_notes": "CRITICAL EXPERIMENT: Measure F by oligomerizing racemic amino acids (e.g., alanine, glycine+alanine) on montmorillonite at 25–60°C in wet-dry conditions. Analyze enantiomeric composition of resulting oligomers by chiral HPLC. Compare all-L vs mixed L/D oligomer abundances."
+    },
+    {
+      "id": "P12",
+      "statement": "Differential hydrolysis stability of homochiral vs heterochiral peptides (Selectivity S): All-L (or all-D) peptides can adopt secondary structures (α-helix, β-sheet) that partially protect against hydrolysis, whereas heterochiral peptides with mixed L/D residues cannot form stable secondary structures and hydrolyze faster. Define S = k_hydrolysis(heterochiral) / k_hydrolysis(homochiral). For short peptides (n = 4–10) in aqueous solution at 25–80°C, estimated S ≈ 2–10.",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": ["P7"],
+      "notes": "Another critical empirical parameter. Secondary structure protection is well-established for longer peptides but may be weak for n < 8. For very short oligomers (n = 3–5), the differential may be minimal. Grade C: must be measured directly.",
+      "formalization_notes": "S enters the gain formula. The mechanism requires S > 1.",
+      "experiment_notes": "EXPERIMENT: Synthesize pairs of homochiral (all-L) and heterochiral (alternating L/D or random L/D) peptides of lengths 4, 6, 8, 10. Measure hydrolysis half-lives at 50°C, pH 7–9. Report S as a function of n."
+    },
+    {
+      "id": "P13",
+      "statement": "Chiral Ratchet Mechanism (new constructed object): Consider a wet-dry cycling system with a pool of L and D amino acid monomers. Each cycle consists of three phases: (i) DRY PHASE — concentration and oligomerization: amino acids concentrate (factor ~10²–10⁴) and oligomerize on mineral surfaces with homochiral kinetic preference F. This produces a distribution of oligomers including all-L, all-D, and mixed oligomers. (ii) WET PHASE — differential hydrolysis and selection: the system is flooded with water. Heterochiral oligomers hydrolyze S times faster than homochiral oligomers, so after time τ_wet, a larger fraction of heterochiral oligomers have been destroyed. Their monomers return to the free pool. (iii) MONOMER RESET — the surviving oligomers plus free monomers constitute the starting material for the next cycle. The key enrichment mechanism is DIFFERENTIAL RETENTION: homochiral oligomers of the majority enantiomer (say all-L) are produced at a higher rate than all-D oligomers (because [L] > [D]) AND survive hydrolysis better than mixed oligomers. Over many cycles, the surviving oligomer population becomes increasingly dominated by all-L species.",
+      "role": "bridge",
+      "grade": "B",
+      "depends_on": ["P6", "P7", "P10", "P11", "P12"],
+      "notes": "This is the core new mechanism. The B grade reflects that the qualitative logic is sound (differential production + differential survival = net enrichment of majority enantiomer in oligomer phase), but the quantitative details require careful mass-balance accounting.",
+      "formalization_notes": "Requires a discrete dynamical system tracking N_L(free), N_D(free), and the distribution of oligomers by length and chirality composition at each cycle boundary.",
+      "experiment_notes": "Full mechanism is testable in a single benchtop experiment: subject racemic amino acid solution with a slight CPL-induced bias to repeated wet-dry cycles on montmorillonite, measuring oligomer ee and monomer pool ee after each cycle."
+    },
+    {
+      "id": "P14",
+      "statement": "Mass-Balance Accounting for One Ratchet Cycle: Start with N_total monomers, N_L = N(1+ε)/2, N_D = N(1−ε)/2 where ε is the monomer pool ee. During oligomerization, a fraction p of total monomers are incorporated into oligomers of length n. The rate of forming an all-L n-mer is proportional to F^{n-1}·[L]^n; all-D n-mer proportional to F^{n-1}·[D]^n; mixed n-mers proportional to lower powers of F times mixed products of [L] and [D]. After hydrolysis selection (fraction (1−1/S) of heterochiral oligomers destroyed, all homochiral oligomers retained), the system contains: (a) surviving all-L oligomers sequestering L-monomers, (b) surviving all-D oligomers sequestering D-monomers, (c) free monomers = original free monomers + monomers returned from hydrolyzed heterochiral oligomers. The ee of the TOTAL system (free + oligomeric) after one cycle must be computed by explicit bookkeeping. Critically, hydrolyzed heterochiral oligomers return BOTH L and D monomers in a ratio close to 1:1 (slightly biased toward D for ε > 0), which partially counteracts the enrichment.",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": ["P13", "P11", "P12"],
+      "notes": "This is the proposition the judge identified as requiring rigorous reworking. The mass balance must be computed exactly for one cycle to verify that net ee gain occurs and to determine the correct gain formula. Grade C because this is best resolved by explicit numerical computation for specific parameter values before any analytic formula is trusted.",
+      "formalization_notes": "Write out the full combinatorial accounting for n-mers. For n=5, enumerate all 2^5 = 32 chirality sequences, compute production rates under fidelity F, compute survival probabilities under selectivity S, compute returned monomer compositions from hydrolyzed oligomers. Sum to get ee_total after one cycle.",
+      "experiment_notes": "CRITICAL COMPUTATION: Implement the mass-balance model numerically for n = 3, 4, 5, 6, 7 and F ∈ {1.5, 2, 3, 5}, S ∈ {1.5, 2, 5, 10}, p ∈ {10⁻⁴, 10⁻³, 10⁻², 10⁻¹}. Compute the exact gain G(ε, F, S, p, n) for ε = 10⁻⁴ and ε = 10⁻¹ to check both regimes. Verify that G > 1 and determine the parameter regime where G is significantly > 1."
+    },
+    {
+      "id": "P15",
+      "statement": "Corrected Gain Formula (Chiral Ratchet Amplification Lemma): For small ε, the ee gain per cycle is ee' = ee·G(F, S, p, n) where G depends on the mass-balance accounting of P14. The route's original formula G = 1 + (F−1)(S−1)·p_n/[1+(F−1)(S−1)·p_n] is an approximation that does NOT properly account for monomer recycling from hydrolyzed heterochiral oligomers. A corrected formula, derived from full mass balance, is: G ≈ 1 + p·[(F^{n−1}·((1+ε)/2)^n − F^{n−1}·((1−ε)/2)^n) · (1 − 1/S·...) − racemic_return_correction] / N_total. This must be computed numerically for specific parameters before being trusted analytically. The key question is whether G > 1 robustly across the plausible parameter space.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": ["P14"],
+      "notes": "The original gain formula had internal inconsistencies (Step 3 vs Step 4 in the route) and did not account for monomer recycling. This corrected version acknowledges the need for numerical verification. Grade C: must be computed explicitly.",
+      "formalization_notes": "The analytic formula is complex enough that numerical computation is essential before attempting formalization.",
+      "experiment_notes": "Same computation as P14. Additionally: verify that G(ε) is approximately constant for small ε (validating the geometric amplification assumption) and characterize how G varies with ε as ε approaches 1 (saturation behavior)."
+    },
+    {
+      "id": "P16",
+      "statement": "Oligomer throughput fraction p_n for near-racemic pools: For a near-racemic monomer pool (ε ≈ 0), the fraction of total amino acid mass incorporated into ALL-HOMOCHIRAL n-mers per cycle is approximately p_homo(n) ≈ p_total · (1/2)^{n-1} · F^{n-1} / Σ_k C(n,k)·F^{?}·(1/2)^n, where p_total is the total oligomerization yield. For typical mineral-catalyzed oligomerization, p_total ~ 10⁻³–10⁻¹ for short oligomers. For n = 5 and F = 3: the fraction of 5-mers that are all-L (out of all 5-mers) is F^4 / Σ_{mixed} ≈ 81 / (81 + 81 + mixed_terms). This must be computed combinatorially.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": ["P11", "P14"],
+      "notes": "The judge correctly noted that p_n was overestimated in the original route. For near-racemic pools without high F, most oligomers are heterochiral. Grade C: straightforward combinatorial calculation but must be done correctly.",
+      "formalization_notes": "Enumerate all 2^n chirality sequences for an n-mer. Compute relative production rates assuming Markov chain with transition probabilities P(same) = F/(F+1), P(different) = 1/(F+1) at each step.",
+      "experiment_notes": "Compute p_homo(n, F) for n ∈ {3,...,10} and F ∈ {1.2, 1.5, 2, 3, 5}. For F=3, n=5: P(all-L) = [F/(F+1)]^4 = (3/4)^4 = 0.316. So ~31.6% of all 5-mers are all-L, and another 31.6% are all-D. This is actually not negligible! Check this calculation."
+    },
+    {
+      "id": "P17",
+      "statement": "Racemization rate constraint: For the chiral ratchet to work, the monomer racemization rate must be slow compared to the cycle rate: k_rac ≪ 1/τ_cycle. At 25–60°C and pH 7–9, amino acid racemization half-lives are: alanine ~10⁵ years at 25°C, ~10³ years at 60°C; aspartic acid ~10⁴ years at 25°C, ~10² years at 60°C. For τ_cycle ~ 1–14 days, the condition k_rac·τ_cycle ≪ 1 is satisfied by many orders of magnitude. Additionally, racemization within oligomers (epimerization) occurs at rates comparable to or slower than free amino acid racemization.",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": ["P6", "P7"],
+      "notes": "Grade C because while the qualitative argument is clear, the specific racemization rates at the proposed temperature and pH should be verified from the Bada (1972) and other primary literature. Epimerization rates within oligomers are less well-characterized.",
+      "formalization_notes": "Requires: k_rac(T, pH) from Arrhenius fits to experimental data. Condition: k_rac · m* · τ_cycle < ee_target, where m* is the number of cycles needed.",
+      "experiment_notes": "Look up or measure racemization half-lives for alanine, valine, leucine at 50°C, pH 8. Check epimerization rates in short peptides."
+    },
+    {
+      "id": "P18",
+      "statement": "Geometric amplification over m cycles: If the per-cycle gain G > 1 is approximately constant for small-to-moderate ee (validated by numerical computation of P15), then after m cycles starting from ee_init, the system ee obeys ee_m ≈ min(ee_init · G^m, ee_sat) where ee_sat is determined by the saturation behavior of the ratchet. The number of cycles to reach |ee| = 0.999 is m* = ⌈ln(0.999/ee_init)/ln(G)⌉, provided ee_sat ≥ 0.999.",
+      "role": "derived",
+      "grade": "B",
+      "depends_on": ["P10", "P15"],
+      "notes": "The geometric growth is a standard consequence of constant multiplicative gain. The B grade reflects that G-constancy must be validated numerically (P15) and that saturation behavior requires separate analysis. The qualitative structure is sound.",
+      "formalization_notes": "Straightforward iteration of a discrete map. Could be formalized as a convergence theorem for the discrete dynamical system ee_{m+1} = G(ee_m) · ee_m.",
+      "experiment_notes": "Run the numerical model from P14/P15 for 10⁴ cycles to verify convergence and determine ee_sat."
+    },
+    {
+      "id": "P19",
+      "statement": "Timescale estimate: For plausible parameters F = 3, S = 5, p_total = 0.05, n = 5, and if the corrected gain (from P15) gives G ≈ 1.05–1.4 per cycle (to be verified numerically), then starting from ee_init ~ 10⁻³ (from P10), the number of cycles to reach ee > 0.999 is m* ≈ 20–140 cycles. At τ_cycle = 1 day (diurnal), this is 20–140 days. At τ_cycle = 14 days (tidal), this is ~1–5 years. Both are negligible on geological timescales and vastly shorter than the amino acid racemization half-life, confirming the racemization constraint (P17) is easily satisfied.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": ["P15", "P17", "P18"],
+      "notes": "Grade C because the numerical value of G is pending verification from P14/P15. The timescale could be much longer if G is close to 1 (e.g., G = 1.001 gives m* ~ 7000 cycles ~ 20 years, still geologically fast). The claim is robust against order-of-magnitude variations in G as long as G > 1.",
+      "formalization_notes": "Plug verified G into m* formula.",
+      "experiment_notes": "This is a direct output of the numerical computation in P14/P15."
+    },
+    {
+      "id": "P20",
+      "statement": "Coupling to Frank-type autocatalysis at elevated ee: Once the ratchet has raised ee above a critical value ee_c (estimated at ~0.01–0.1), Frank-type autocatalytic amplification (P4) can engage if an autocatalytic reaction with R > 1 exists. The ratchet serves as a 'pre-amplifier' that bridges the gap between the tiny initial CPL/stochastic bias (~10⁻³) and the Frank threshold. The Frank mechanism then provides the final push to |ee| > 0.999 with ee_sat = √(1 − 1/R²). For R > 22, ee_sat > 0.999 directly.",
+      "role": "bridge",
+      "grade": "B",
+      "depends_on": ["P4", "P18"],
+      "notes": "This coupling is structurally sensible: the ratchet handles the hard low-ee regime where Frank needs a seed, and Frank handles the high-ee regime efficiently. B grade because the coupling requires both mechanisms to operate in the same physical system, which is plausible but not guaranteed.",
+      "formalization_notes": "Model the transition from ratchet-dominated to Frank-dominated dynamics as ee crosses ee_c.",
+      "experiment_notes": ""
+    },
+    {
+      "id": "P21",
+      "statement": "Early Earth environmental compatibility: The complete mechanism (CPL symmetry breaking → stochastic amplification in small compartments → chiral ratchet via wet-dry cycling with enantioselective oligomerization and differential hydrolysis → optional Frank amplification) requires: (i) amino acids at μM–mM concentrations — ESTABLISHED (P7); (ii) CPL exposure from star-forming region — ESTABLISHED for early solar system (P2); (iii) wet-dry cycling with concentration factors 10²–10⁴ in porous rocks, hot springs, or tidal pools — ESTABLISHED (P6); (iv) mineral surfaces catalyzing oligomerization with F > 1 — PARTIALLY SUPPORTED, exact F under debate (P11); (v) differential hydrolysis S > 

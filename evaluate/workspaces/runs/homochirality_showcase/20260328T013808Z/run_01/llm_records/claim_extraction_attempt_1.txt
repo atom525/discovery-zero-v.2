@@ -1,0 +1,190 @@
+
+
+```json
+{
+  "claims": [
+    {
+      "claim_text": "In the symmetric Frank RD system linearized at the racemic steady state, the Jacobian has J₁₁ = J₂₂ = a and J₁₂ = J₂₁ = b, where a = k₂A* - k_d - k_inh·η*/2 and b = -k_inh·η*/2.",
+      "claim_type": "structural",
+      "confidence": 0.95,
+      "evidence": "Direct computation of partial derivatives of the Frank RD equations at the racemic fixed point L* = D* = η*/2.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "The characteristic equation for perturbations ~exp(σt + ikx) in the Frank RD system is σ² - σ[2a - (D_L + D_D)k²] + [(a - D_L k²)(a - D_D k²) - b²] = 0.",
+      "claim_type": "quantitative",
+      "confidence": 0.95,
+      "evidence": "Standard linear stability analysis: det(J - k²D - σI) = 0 for the 2×2 system.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "The discriminant of the characteristic equation is (D_L - D_D)²k⁴ + 4b², yielding eigenvalues σ± = [2a - (D_L + D_D)k²]/2 ± ½√[(D_L - D_D)²k⁴ + 4b²].",
+      "claim_type": "quantitative",
+      "confidence": 0.95,
+      "evidence": "Algebraic expansion of [2a - (D_L+D_D)k²]² - 4[(a-D_Lk²)(a-D_Dk²) - b²] simplifies to (D_L-D_D)²k⁴ + 4b².",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "When D_L = D_D = D, the σ₊ eigenvalue at k=0 equals a + |b| = k₂A* - k_d, corresponding to the chiral (L-D) mode, and σ₋ = a - |b| = k₂A* - k_d - k_inh·η*.",
+      "claim_type": "quantitative",
+      "confidence": 0.93,
+      "evidence": "Substituting D_L = D_D into the eigenvalue formula and using a + |b| = k₂A* - k_d since |b| = k_inh·η*/2 and a = k₂A* - k_d - k_inh·η*/2.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "For the symmetric Frank RD system with equal diffusion, the most unstable mode of the chiral branch σ₊ is always at k=0 (uniform symmetry breaking), not at finite wavenumber — hence no Turing patterns arise.",
+      "claim_type": "structural",
+      "confidence": 0.94,
+      "evidence": "σ₊ = a + |b| - Dk² is a strictly decreasing function of k², so maximum is at k=0.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "Even with D_L ≠ D_D, the derivative dσ₊/d(k²) at k²=0 equals -(D_L + D_D)/2, which is always negative, so the k=0 mode remains the most unstable for the σ₊ (chiral) branch.",
+      "claim_type": "quantitative",
+      "confidence": 0.92,
+      "evidence": "Differentiation of σ₊(K) with respect to K = k² at K=0: the square-root term contributes zero because the linear coefficient in K inside the square root vanishes at K=0.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "The standard Turing instability mechanism does NOT produce spatial chiral patterns in the symmetric Frank system with differential diffusion alone; the uniform chiral mode k=0 always dominates.",
+      "claim_type": "structural",
+      "confidence": 0.90,
+      "evidence": "Since dσ₊/d(k²)|_{k²=0} < 0 always, no finite-wavenumber instability exists for the chiral branch regardless of the diffusion ratio D_L/D_D.",
+      "bridge_proposition_id": "P6"
+    },
+    {
+      "claim_text": "The chiral fidelity ratio F for amino acid oligomerization on montmorillonite is experimentally estimated at F ≈ 2–5, based on Brack and Orgel (1975) and Hitz and Luisi (2004).",
+      "claim_type": "quantitative",
+      "confidence": 0.55,
+      "evidence": "Literature citations provided in the memo; the specific value range needs verification against the actual experimental papers.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The stability selectivity S = k_hydrolysis(heterochiral)/k_hydrolysis(homochiral) is estimated at S ≈ 2–10 for short peptides (n = 4–10), based on differential secondary structure formation.",
+      "claim_type": "quantitative",
+      "confidence": 0.45,
+      "evidence": "Qualitative argument that homochiral peptides form stable secondary structures while heterochiral ones do not; the quantitative range S ≈ 2–10 lacks specific experimental citation.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The chiral ratchet gain factor per wet-dry cycle is G = 1 + (F-1)(S-1)·p_n / [1 + (F-1)(S-1)·p_n], where p_n is the fraction of amino acid mass passing through the oligomer channel per cycle.",
+      "claim_type": "quantitative",
+      "confidence": 0.40,
+      "evidence": "Derived from a simplified model of enantioselective oligomerization + differential hydrolysis + monomer recycling; the exact formula depends on multiple simplifying assumptions (small ε regime, complete recycling, specific kinetic model).",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "For F=3, S=5, p_n=0.1, the gain per cycle is G ≈ 1.44.",
+      "claim_type": "quantitative",
+      "confidence": 0.80,
+      "evidence": "Direct substitution: G = 1 + (2)(4)(0.1)/(1 + (2)(4)(0.1)) = 1 + 0.8/1.8 = 1 + 0.444 ≈ 1.44.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "Starting from ee₀ = 10⁻⁴ with G = 1.44, the number of cycles to reach ee ~ 1 is m* = ln(10⁴)/ln(1.44) ≈ 9.21/0.365 ≈ 25 cycles.",
+      "claim_type": "quantitative",
+      "confidence": 0.85,
+      "evidence": "Direct computation: ln(10⁴) = 9.2103, ln(1.44) = 0.3646, ratio ≈ 25.3.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "If oligomerization yield is very low (p_n ~ 10⁻⁴) with F=3 and S=5, then G ≈ 1.0008 and m* ≈ 11500 cycles, corresponding to ~32 years at diurnal cycling.",
+      "claim_type": "quantitative",
+      "confidence": 0.80,
+      "evidence": "G = 1 + 8×10⁻⁴/(1+8×10⁻⁴) ≈ 1.0008. m* = 9.21/0.0008 ≈ 11513. At 365 cycles/year: ~31.5 years.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "Amino acid racemization half-lives at 25–60°C are τ_rac ~ 10³–10⁶ years (except aspartate at ~10² years), so the wet-dry cycle time τ_cycle (hours to days) satisfies τ_cycle ≪ τ_rac.",
+      "claim_type": "quantitative",
+      "confidence": 0.75,
+      "evidence": "Well-established geochemical data on amino acid racemization kinetics; aspartate is known to racemize fastest among common amino acids.",
+      "bridge_proposition_id": "P17"
+    },
+    {
+      "claim_text": "After m wet-dry cycles, the monomer pool enantiomeric excess obeys ee_m ≈ ee₀ · G^m for small ee (linear amplification regime).",
+      "claim_type": "quantitative",
+      "confidence": 0.50,
+      "evidence": "Derived under the assumption that the gain G is constant (independent of ε), which only holds in the small-ε linearized regime. Nonlinear saturation effects as ee → 1 are not captured.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The ee among all-homochiral n-mers formed from a monomer pool with small ee = ε is approximately nε (linear amplification with chain length).",
+      "claim_type": "quantitative",
+      "confidence": 0.75,
+      "evidence": "Calculation: ee_homo-n = ((1+ε)^n - (1-ε)^n)/((1+ε)^n + (1-ε)^n) ≈ nε for small ε, using Taylor expansion to first order.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "A 1 femtoliter volume at 1 mM concentration contains approximately 600,000 molecules, not 600 as previously claimed.",
+      "claim_type": "quantitative",
+      "confidence": 0.99,
+      "evidence": "1 fL = 10⁻¹⁵ L, 1 mM = 10⁻³ mol/L, N = 10⁻¹⁵ × 10⁻³ × 6.022×10²³ = 6.022×10⁵ ≈ 600,000. The earlier claim of 600 was off by a factor of 1000.",
+      "bridge_proposition_id": "P7"
+    },
+    {
+      "claim_text": "The chiral ratchet mechanism requires no phase-transition-like threshold: any F > 1, S > 1, and p_n > 0 yields G > 1 and hence eventual amplification.",
+      "claim_type": "structural",
+      "confidence": 0.70,
+      "evidence": "From the formula G = 1 + (F-1)(S-1)p_n/[1+(F-1)(S-1)p_n], all three factors (F-1), (S-1), p_n being positive ensures G > 1. However, this ignores racemization losses and other degradation.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The chiral ratchet serves as a 'pre-amplifier' that boosts CPL-level ee₀ ~ 10⁻⁴ to Frank-threshold ee ~ 10⁻² to 10⁻¹, after which Frank autocatalysis drives the system to |ee| > 0.999.",
+      "claim_type": "heuristic",
+      "confidence": 0.50,
+      "evidence": "Plausibility argument connecting the ratchet mechanism to the established Frank amplification. Assumes that Frank-type autocatalysis has a threshold ee below which it cannot operate effectively.",
+      "bridge_proposition_id": "P19"
+    },
+    {
+      "claim_text": "For the simplified chiral ratchet with n=5 and only all-homochiral oligomers surviving, the gain per cycle is G ≈ 1 + p_n·(n-1) = 1 + 0.05·4 = 1.2 when p_n = 0.05.",
+      "claim_type": "quantitative",
+      "confidence": 0.65,
+      "evidence": "Derived from the simplified model where heterochiral oligomers hydrolyze completely and monomers are recycled as racemic. The formula ε' = ε·[1 + p_n·(n-1)] requires validation of the assumptions.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "For experimentally plausible parameters (F ~ 2–5, S ~ 2–10, p_n ~ 0.01–0.1), the gain factor G ranges from ~1.01 to ~1.44.",
+      "claim_type": "quantitative",
+      "confidence": 0.60,
+      "evidence": "Computed from G = 1 + (F-1)(S-1)p_n/[1+(F-1)(S-1)p_n]. Lower bound: F=2, S=2, p_n=0.01 gives G ≈ 1.0099. Upper bound: F=5, S=10, p_n=0.1 gives G ≈ 1 + 3.6/4.6 ≈ 1.78, suggesting the stated upper bound of 1.44 is conservative or computed at F=3, S=5, p_n=0.1.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The number of wet-dry cycles to reach |ee| > 0.999 from ee₀ = 10⁻⁴ ranges from ~25 to ~12000 cycles depending on parameters, corresponding to days to decades at diurnal cycling.",
+      "claim_type": "quantitative",
+      "confidence": 0.70,
+      "evidence": "m* = ln(10⁴)/ln(G). For G=1.44: m*≈25; for G=1.0008: m*≈11500. Time range depends on cycle period.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "Monomers released from hydrolyzed heterochiral oligomers are approximately racemic when the monomer pool ee ε is small.",
+      "claim_type": "heuristic",
+      "confidence": 0.70,
+      "evidence": "For small ε, heterochiral oligomers incorporate both enantiomers in roughly equal proportions, so their hydrolysis products have near-zero ee.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The Markov chain model for enantioselective polymerization has a transition matrix with P(L→L) = F/(F+1) and P(L→D) = 1/(F+1) at zeroth order in ε, with stationary distribution (1/2, 1/2) by symmetry.",
+      "claim_type": "quantitative",
+      "confidence": 0.90,
+      "evidence": "For ε=0, [L]=[D]=1/2, so P(add L | last was L) = F·(1/2)/(F·(1/2)+(1/2)) = F/(F+1). Stationary distribution is uniform by the symmetry of the transition matrix under L↔D exchange.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "For dimer formation with homochiral kinetic preference F, the ee among homochiral dimers from a pool with small ee = ε is approximately 2ε.",
+      "claim_type": "quantitative",
+      "confidence": 0.90,
+      "evidence": "P(LL) ∝ F(1+ε)², P(DD) ∝ F(1-ε)². ee_homo = ((1+ε)²-(1-ε)²)/((1+ε)²+(1-ε)²) = 4ε/(2+2ε²) = 2ε/(1+ε²) ≈ 2ε for small ε.",
+      "bridge_proposition_id": null
+    },
+    {
+      "claim_text": "The critical empirical unknown for the full prebiotic homochirality mechanism (R2) — existence of a prebiotic autocatalytic system with both autocatalysis and mutual inhibition — remains unresolved, but the chiral ratchet provides an alternative pre-amplification stage that may relax the requirements on the Frank-type system.",
+      "claim_type": "structural",
+      "confidence": 0.60,
+      "evidence": "The ratchet mechanism uses enantioselective polymerization and differential stability rather than autocatalysis per se, potentially circumventing R2 for the initial amplification phase.",
+      "bridge_proposition_id": "R2"
+    }
+  ]
+}
+```

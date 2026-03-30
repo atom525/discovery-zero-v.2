@@ -408,7 +408,7 @@ class ProcessAdvantageVerifier:
             target = torch.tensor([sample.actual_belief_gain], dtype=torch.float32)
             loss = loss_fn(pred, target)
             loss.backward()
-            total_loss += float(loss)
+            total_loss += loss.item()
 
         if batch:
             optimizer.step()

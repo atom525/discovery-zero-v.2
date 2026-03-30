@@ -8,6 +8,8 @@ Discovery Zero 是一个面向开放问题探索的数学发现系统。系统�
   - `graph/`：图模型、注入、推理适配
   - `planning/`：MCTS/编排/桥接规划
   - `tools/`：LLM、Lean、实验等工具封装
+- `src/gaia_bp/`：内置的 Gaia 信念传播引擎（从 Gaia 仓库 vendor 并扩展）
+- `libs/`：推理兼容层（`inference_v2/` shim、`graph_ir/`、`storage/`、`embedding`）
 - `tests/`：测试用例
 - `evaluate/`：基准 case 与 suite 配置
 - `lean_workspace/`：Lean 工程（源码保留，构建产物已移除）
@@ -17,7 +19,7 @@ Discovery Zero 是一个面向开放问题探索的数学发现系统。系统�
 ## 2. 环境要求
 
 - Python `>= 3.12`
-- 可访问 Gaia 代码（建议路径：`/personal/Gaia`）
+- 仓库已内置 Gaia 依赖组件（无需额外 Gaia 仓库）
 - 若使用 LLM 功能，需要可用的 LiteLLM 兼容网关
 
 ## 3. 安装
@@ -27,10 +29,10 @@ cd /personal/Discovery-Zero-v2
 pip install -e ".[dev]"
 ```
 
-如果 Gaia 不在默认路径，请设置：
+运行前请设置：
 
 ```bash
-export PYTHONPATH="/personal/Gaia:/personal/Discovery-Zero-v2/src:$PYTHONPATH"
+export PYTHONPATH="$(pwd)/src:$(pwd):$PYTHONPATH"
 ```
 
 ## 4. 快速使用
@@ -103,11 +105,25 @@ cp .env.example .env
 pytest -q
 ```
 
-## 8. 当前仓库清理说明
+## 8. 研究流程指南
+
+完整的从零跑通指南见 **[docs/WALKTHROUGH_ZH.md](docs/WALKTHROUGH_ZH.md)**，以同手性机制（Homochirality）这一真实案例为范例，覆盖：
+
+- 环境配置 → Case 设计 → 运行探索 → 解读产物
+- 真实实验记录分析（`evaluate/workspaces/runs/homochirality_showcase/`）
+- 自定义研究问题模板
+
+## 9. Showcase：同手性机制发现
+
+仓库包含一份完整的真实实验记录（`evaluate/workspaces/runs/homochirality_showcase/20260328T013808Z/`），展示 Discovery Zero 对"前生物同手性起源"这一开放问题的自主探索过程。系统发现了 **浓度坡道分岔（CRB）机制**，最终 belief 达到 0.815。
+
+详见 `PAPER_HOMOCHIRALITY.md` 和 `run_01/` 目录下的完整 LLM 交互记录。
+
+## 10. 当前仓库清理说明
 
 本仓库已移除以下内容以便协作与推送：
 
-- 中间运行数据（`evaluate/workspaces/runs/`）
+- 中间运行数据（`evaluate/workspaces/runs/`，showcase 除外）
 - 生成报告（`evaluate/workspaces/reports/`）
 - 缓存与构建产物（`__pycache__/`, `.pytest_cache/`, `lean_workspace/.lake/`）
 - 敏感配置（`.env`）

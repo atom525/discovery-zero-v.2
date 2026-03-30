@@ -23,7 +23,7 @@ flowchart TD
     subgraph graph [推理超图 — HyperGraph]
         Nodes["节点 Node\nbelief / state / verification_source"]
         Edges["超边 Hyperedge\npremise_ids → conclusion_id"]
-        BP["信念传播 BP\n(Gaia 引擎)"]
+        BP["信念传播 BP\n(内置 gaia_bp 引擎)"]
     end
 
     subgraph verification [验证层]
@@ -304,14 +304,32 @@ Plausible 成功后，`_handle_plausible_followups` 调用 `run_bridge_planning_
 
 ## 6. 信念传播（Belief Propagation）
 
-位于 `src/discovery_zero/graph/inference.py`，底层调用 Gaia（`/personal/Gaia`）的 BP 引擎。
+位于 `src/discovery_zero/graph/inference.py`，底层调用仓库内置的 Gaia BP 引擎（`src/gaia_bp` + `libs/inference_v2`）。
 
-### 6.1 两种触发方式
+### 6.1 Factor 类型
+
+BP 引擎（`src/gaia_bp/`）支持以下 `FactorType`：
+
+| FactorType | 语义 | 参数 | 用途 |
+|-----------|------|------|------|
+| `ENTAILMENT` | A → B（原始蕴含） | `p` | Gaia 原生 |
+| `INDUCTION` / `ABDUCTION` | 归纳/溯因推理 | `p` | Gaia 原生 |
+| `CONTRADICTION` | A ⊥ B | `p` + `relation_var` | 矛盾约束 |
+| `EQUIVALENCE` | A ↔ B | `p` + `relation_var` | 等价约束 |
+| `CONJUNCTION` | M = A₁ ∧ ... ∧ Aₖ | `p`（确定性） | 多前提合取中间变量 |
+| `SOFT_IMPLICATION` | A ↝ B（双参数） | `p1`, `p2` | 条件概率蕴含 |
+
+`adapter_v2.py` 将超图边映射为 factor：
+- **单前提边**：直接用 `SOFT_IMPLICATION(A → B)`
+- **多前提边**：先 `CONJUNCTION(A₁,...,Aₖ → M)`，再 `SOFT_IMPLICATION(M → B)`
+- **矛盾/等价**：创建 `relation_var` 并用对应的 `FactorType`
+
+### 6.2 两种触发方式
 
 1. **传统 BP**（每次 ingest 后）：`propagate_beliefs(graph)` — 全图 Loopy BP
 2. **验证信号触发 BP**（NEW）：`propagate_verification_signals`
    - 每个 verified/refuted 声称计为一个确定性信号
-   - `SignalAccumulator` 累积到 `bp_propagation_threshold`（默认3）后批量传播
+   - `SignalAccumulator` 累积到 `bp_propagation_threshold`（默认1）后批量传播
    - 避免每个小更新都触发全图 BP
 
 ### 6.2 信念值含义
@@ -370,7 +388,7 @@ DISCOVERY_ZERO_LEAN_FEEDBACK_ENABLED=true \
 LITELLM_PROXY_API_BASE=... \
 LITELLM_PROXY_API_KEY=... \
 DISCOVERY_ZERO_LLM_MODEL=cds/Claude-4.6-opus \
-PYTHONPATH="/personal/Zero/src:/personal/Gaia" \
+PYTHONPATH="$(pwd)/src:$(pwd)" \
 python scripts/run_benchmark_suite.py \
   --suite evaluate/suite_lonely_runner_single.json \
   --repeats 1 \
@@ -428,10 +446,10 @@ evaluate/workspaces/runs/{suite_id}/{timestamp}/{case_id}/run_{N}/
 | `DISCOVERY_ZERO_VERIFICATION_LOOP_ENABLED` | true | 启用 ClaimPipeline + SignalAccumulator |
 | `DISCOVERY_ZERO_LEAN_FEEDBACK_ENABLED` | true | 启用 LeanFeedbackParser + StructuralClaimRouter |
 | `DISCOVERY_ZERO_VERIFICATION_PARALLEL_WORKERS` | 3 | 并行验证线程数 |
-| `DISCOVERY_ZERO_BP_PROPAGATION_THRESHOLD` | 3 | 触发 BP 所需的最低确定性信号数 |
+| `DISCOVERY_ZERO_BP_PROPAGATION_THRESHOLD` | 1 | 触发 BP 所需的最低确定性信号数 |
 | `DISCOVERY_ZERO_MAX_CLAIMS_PER_MEMO` | 10 | 每次 plausible 最多提取声称数 |
 | `DISCOVERY_ZERO_MAX_DECOMPOSE_DEPTH` | 4 | 结构性声称最大分解深度 |
-| `DISCOVERY_ZERO_MCTS_MAX_ITERATIONS` | 30 | MCTS 最大迭代次数 |
+| `DISCOVERY_ZERO_MCTS_MAX_ITERATIONS` | 50 | MCTS 最大迭代次数 |
 | `DISCOVERY_ZERO_MCTS_MAX_TIME_SECONDS` | 3600 | MCTS 最大运行时间（秒） |
 | `DISCOVERY_ZERO_ENGINE_PLAUSIBLE_MAX_ATTEMPTS` | 4 | 单次迭代 plausible 最大重试次数 |
 | `DISCOVERY_ZERO_UNVERIFIED_CLAIM_PRIOR` | 0.15 | 未验证节点默认先验 |
@@ -441,173 +459,101 @@ evaluate/workspaces/runs/{suite_id}/{timestamp}/{case_id}/run_{N}/
 ## 10. 代码目录结构
 
 ```
-src/discovery_zero/
-  graph/
-    models.py          # HyperGraph, Node, Hyperedge
-    memo.py            # ResearchMemo, Claim, VerificationResult, ClaimType
-    ingest.py          # ingest_skill_output, ingest_verified_claim
-    inference.py       # propagate_beliefs, propagate_verification_signals, SignalAccumulator
-    inference_energy.py
-    persistence.py
-    adapter.py         # Gaia BP 适配层
-  planning/
-    mcts_engine.py     # MCTSDiscoveryEngine（主引擎）
-    orchestrator.py    # run_plausible/experiment/lean/bridge_planning_action
-    claim_pipeline.py  # ClaimPipeline（提取 + 分类 + 优先级）
-    claim_verifier.py  # ClaimVerifier（量化/结构性/启发性验证）
-    lean_feedback.py   # LeanFeedbackParser, StructuralClaimRouter
-    verification_loop.py  # VerificationLoop（CLI 独立入口）
-    bridge.py          # BridgePlan, materialize_bridge_nodes
-    discovery_engine.py  # BeliefGapAnalyser
-    search.py          # RMaxTSSearch, SearchState, select_module_ucb
-    htps.py            # HTPS path selection
-    decompose.py       # DecomposeEngine
-    analogy.py / specialize.py / knowledge_retrieval.py
-    expert_iteration.py  # ExperienceBuffer
-  tools/
-    llm.py             # chat_completion, run_skill (含 record_path 支持)
-    lean.py            # verify_proof, decompose_proof_skeleton
-    experiment_backend.py
-  benchmark.py         # run_suite, run_case_once, _run_case_once_mcts
-  config.py            # ZeroConfig（所有配置项）
-  cli.py               # typer CLI
-  skills/              # LLM skill prompt 文件
+src/
+  discovery_zero/            # 核心源码
+    graph/
+      models.py              # HyperGraph, Node, Hyperedge
+      memo.py                # ResearchMemo, Claim, VerificationResult, ClaimType
+      ingest.py              # ingest_skill_output, ingest_verified_claim
+      inference.py           # propagate_beliefs, propagate_verification_signals, SignalAccumulator
+      inference_energy.py
+      persistence.py
+      adapter.py             # Gaia v1 适配层
+      adapter_v2.py          # Gaia v2 适配层（CONJUNCTION / SOFT_IMPLICATION）
+    planning/
+      mcts_engine.py         # MCTSDiscoveryEngine（主引擎）
+      orchestrator.py        # run_plausible/experiment/lean/bridge_planning_action
+      claim_pipeline.py      # ClaimPipeline（提取 + 分类 + 优先级）
+      claim_verifier.py      # ClaimVerifier（量化/结构性/启发性验证）
+      lean_feedback.py       # LeanFeedbackParser, StructuralClaimRouter
+      verification_loop.py   # VerificationLoop（CLI 独立入口）
+      bridge.py              # BridgePlan, materialize_bridge_nodes
+      discovery_engine.py    # BeliefGapAnalyser
+      search.py              # RMaxTSSearch, SearchState, select_module_ucb
+      htps.py                # HTPS path selection
+      decompose.py           # DecomposeEngine
+      analogy.py / specialize.py / knowledge_retrieval.py
+      expert_iteration.py    # ExperienceBuffer
+    tools/
+      llm.py                 # chat_completion, run_skill (含 record_path 支持)
+      lean.py                # verify_proof, decompose_proof_skeleton
+      experiment_backend.py
+    benchmark.py             # run_suite, run_case_once, _run_case_once_mcts
+    config.py                # ZeroConfig（所有配置项）
+    cli.py                   # typer CLI
+    skills/                  # LLM skill prompt 文件
+  gaia_bp/                   # 内置 Gaia BP 引擎（vendor + 扩展）
+    factor_graph.py          # FactorGraph, FactorType（含 CONJUNCTION / SOFT_IMPLICATION）
+    potentials.py            # 势函数（含 conjunction / soft_implication）
+    engine.py                # InferenceEngine（Loopy BP / JT / GBP / Exact）
+    exact.py                 # 精确推理
+    jt.py                    # Junction Tree
+    gbp.py                   # Generalized BP
+libs/                        # 推理兼容层
+  inference_v2/              # Gaia v2 shim → gaia_bp
+  inference/                 # Gaia v1 推理
+  graph_ir/                  # Gaia Graph IR 持久化模型
+  storage/                   # Gaia 存储组件
+  embedding.py               # 嵌入模型
 evaluate/
-  suite_lonely_runner_single.json
-  cases/lonely_runner_n11/
-    case_frontier_assisted.json
-    proof_config_frontier.json
+  suite.json
+  cases/
+    lonely_runner_n11/
+    homochirality_mechanism/
 ```
 
 ---
 
-## 11. 当前架构的已知硬伤
+## 11. 架构演进：已修复问题与残余局限
 
-以下问题经过真实运行数据验证，是当前系统最需要解决的逻辑缺陷。
+### 2026-03-26 重构已修复的关键断裂
 
-### 硬伤1：Claim 节点与图推理结构完全断开（最关键）
+以下问题在之前的重构中已全部修复：
 
-**现象**：`ingest_verified_claim` 把验证后的声称写成图节点（含 `verification_source`），但这些节点**从不出现在任何超边的 premise 中**，与目标节点之间零连接。
-
-```
-现实图结构（实测）：
-  Nodes: 29，Edges: 2（都是 plausible module）
-  verified claim 节点：6个，全部孤立于 edges 之外
-```
-
-**后果**：
-- BP 沿边传播，到达不了孤立的 claim 节点 → 目标 belief 不变
-- MCTS reward = `target_belief_delta + exploration_bonus`，delta=0 → 验证管线产出对搜索完全不可见
-- `SignalAccumulator` 触发 BP，运算量不低，但对推理路径零贡献
-
-**根因**：验证驱动和桥接计划是两套**并行但不相交**的系统。claim 节点靠文本匹配（`find_node_ids_by_statement`）与现有节点关联，但 plausible prose 里提取的 claim 文本和 bridge plan 里具名的命题文本几乎从不完全一致，所以总是新建孤立节点。
-
-**修复方向**：bridge plan 生成后，把 bridge propositions 作为"带 ID 的 claim target"重新喂给验证管线，让验证结果直接更新对应 bridge proposition 的 belief（绕过文本匹配，改为 ID 匹配）。
-
----
-
-### 硬伤2：MCTS 搜索对验证结果盲目
-
-**现象**：MCTS 的 reward 计算只看 `target_belief_delta`（BP 从目标反流）和新节点数量。由于硬伤1，`target_belief_delta` 几乎恒为0，MCTS 退化为纯探索导向，缺少有效利用（exploitation）。
-
-**后果**：
-- 每轮迭代选 PLAUSIBLE 后，reward 主要来自 `exploration_bonus`（新节点数、新 premise 数），而不是验证质量
-- UCB 不能区分"有价值的 plausible 路线"和"低质量但产出新节点的路线"
-- 已驳斥的路线（如 Farey 极值假设）不会主动降低该方向的 UCB 分数
-
-**修复方向**：在 reward 计算中加入`verified_claim_count * weight + refuted_claim_count * penalty`，让验证结果直接影响 UCB 排序。
-
----
-
-### 硬伤3：Bridge Plan 命题和 Claim 是两套语义表示
-
-**现象**：一次 plausible 后，系统会：
-1. ClaimPipeline 提取若干 Claim 并验证（一套节点）
-2. BridgePlan 生成若干 Proposition 并 materialize（另一套节点）
-
-这两套节点在语义上高度重叠（都来自同一次 plausible 输出），但没有任何机制将它们对应起来。Bridge plan P3 的声称内容可能和 claim_3 几乎相同，但 belief 完全独立更新。
-
-**后果**：同一数学事实在图里存在两个 belief 值不同的节点，BP 只更新其中一个，造成信息割裂。
-
-**修复方向**：在 `_handle_plausible_followups` 完成 bridge plan materialization 后，遍历 claim 验证结果，按语义相似度或关键词匹配，把验证结论应用到对应的 bridge proposition 节点上。
-
----
-
-### 硬伤4：实验代码中的浮点精度误报
-
-**现象**：LLM 生成的实验代码用网格采样（如10万点）搜索孤独时刻，当最优时刻是有理数（如 t=1/11）且网格不精确时，会把"差 9e-6"的情况报告为反例。
-
-**已有修复**：orchestrator 层加了 `|threshold - best_min_dist| < 1e-4` 的守卫，接近阈值的"反例"降为 inconclusive。
-
-**残余问题**：守卫是被动的（在结果层过滤），LLM 生成的实验代码本身仍然不做有理数精确验证。对于纯整数速度集，正确做法是用分数运算（`fractions.Fraction`）在 t ∈ {k/L : 0≤k<L, L=lcm(speeds)} 上穷举，而非浮点网格。
-
-**修复方向**：在实验 skill prompt 里明确要求：对小规模速度集必须用有理数算术验证，浮点网格只作为快速筛选。
-
----
-
-### 已修复的断裂（本轮实现修复）
-
-以下在 **2026-03-26** 的重构中已修复：
-
-1. **`materialize_bridge_nodes` 建边** — Pass 2 翻译 `depends_on` 为超边
-2. **Bridge TARGET / MCTS target 节点重复** — `target_node_id` 参数强制映射
-3. **Claim 验证结果孤立** — `bridge_proposition_id` + `bridge_node_map` 精确写回
-4. **执行顺序** — bridge plan 在验证管线之前执行
-5. **MCTS reward 感知验证** — `verification_bonus` 加入 reward 计算
-6. **`propagate_verification_signals` 定位节点** — `VR.claim_id` 回写为图节点 ID
+1. **Claim 节点孤立**（原硬伤1/3） — 通过 `bridge_proposition_id` + `bridge_node_map` 实现 ID 级精确写回，验证结果直接更新 bridge 命题节点的 belief，不再依赖文本匹配
+2. **MCTS 对验证结果盲目**（原硬伤2） — `verification_bonus` 加入 reward 计算，验证质量直接影响 UCB 排序
+3. **`materialize_bridge_nodes` 建边** — Pass 2 翻译 `depends_on` 为超边
+4. **Bridge TARGET / MCTS target 节点重复** — `target_node_id` 参数强制映射
+5. **执行顺序** — bridge plan 在验证管线之前执行
+6. **`propagate_verification_signals` 定位节点** — `VR.claim_id` 回写为真实图节点 ID
 7. **`old_style_results` 重复处理** — 有 bridge mapping 时不收录 `ClaimVerificationResult`
 8. **grade-confidence 硬编码** — 提取为 `BRIDGE_GRADE_CONFIDENCE` 常量
 9. **Bridge followups 只验证1个 proposition** — 扩展 `max_rounds` 覆盖所有实验 proposition
 
----
+### 2026-03-30 BP 引擎自包含
 
-### 硬伤5：Lean claim verification 对 frontier 问题语义错位
+- Gaia BP 引擎完整 vendor 到 `src/gaia_bp/`，项目不再依赖外部 Gaia 仓库
+- 新增 `CONJUNCTION` 和 `SOFT_IMPLICATION` FactorType（详见 §6.1），精确表达多前提合取和条件概率蕴含
+- `adapter_v2.py` 重写：多前提边正确分解为 CONJUNCTION → SOFT_IMPLICATION 两步 factor
+- `CONTRADICTION` / `EQUIVALENCE` 正确生成 `relation_var`
 
-**现象**：`StructuralClaimRouter` 对分类为 "structural" 的 claim 尝试用 Lean 验证，但从 plausible prose 里提取的结构性声称往往是未证明的数学猜想（如"Farey 极值假设"），Lean 根本无法构造证明。
+### 残余局限
 
-**后果**：Lean 每次都失败，产生 `lean_gaps_identified` 数量的无用记录，并耗费大量时间（当前 `timeout=180s`）。
+**局限1：实验代码浮点精度误报**
 
-**已有修复**：加了 `enable_lean_claim_verify = enable_strict_lean AND enable_decomposition` 守卫，对 frontier 问题默认关闭 Lean claim verification。
+LLM 生成的实验代码用浮点网格采样（如10万点），当最优时刻是有理数（如 t=1/11）且网格不精确时，可能把"差 9e-6"的情况误报为反例。已有 `|threshold - best_min_dist| < 1e-4` 的守卫将接近阈值的结果降为 inconclusive，但 LLM 生成的代码本身不做有理数精确验证。改进方向：在实验 skill prompt 中要求对小规模输入用分数运算穷举。
 
-**残余问题**：即使关闭了，结构性声称仍然走 `_verify_heuristic_claim`（LLM Judge），而不是正确地跳过无意义的验证。更好的做法是：结构性声称只在 bridge plan 中出现且 Grade≤B 时才触发 Lean。
+**局限2：Lean claim verification 对 frontier 问题语义错位**
 
----
+结构性声称在 frontier 问题中往往是未证明猜想，Lean 无法构造证明。已通过 `enable_lean_claim_verify = enable_strict_lean AND enable_decomposition` 守卫对 frontier 问题关闭 Lean claim verification。残余问题：关闭后结构性声称仍走 LLM Judge（`_verify_heuristic_claim`），可考虑更精细的路由策略。
 
-### 架构缺陷总图
+**局限3：跨 run 不继承图状态**
 
-```mermaid
-flowchart TD
-    Plausible["plausible_action\n(推理产出)"]
-
-    subgraph A ["路径A：ClaimPipeline"]
-        Claims["Claim 节点\nverification_source 已设置"]
-        ClaimBP["孤立节点\n无 edge 连接 ⚠️"]
-    end
-
-    subgraph B ["路径B：BridgePlan"]
-        BridgeProps["Bridge Proposition 节点\nbelief=0.5 初始化"]
-        BridgeEdge["edge 连接到目标"]
-    end
-
-    Target["目标节点\nbelief 不变 ⚠️"]
-
-    Plausible --> Claims --> ClaimBP
-    Plausible --> BridgeProps --> BridgeEdge --> Target
-
-    ClaimBP -. "语义重叠但无ID映射 ⚠️" .-> BridgeProps
-
-    Note1["❌ BP 无法从 Claim 节点<br/>传播到目标"]
-    Note2["❌ MCTS reward 看不到<br/>验证结果"]
-    Note3["❌ 两套节点 belief<br/>互不影响"]
-
-    ClaimBP --> Note1
-    Claims --> Note2
-    ClaimBP & BridgeProps --> Note3
-```
+同一 case 的多次 repeat（run_01, run_02...）各自从 seed config 构建新图，不继承上一次 run 的探索成果。`experience_buffer` 可跨 run 共享用于训练，但图层面每次从头开始。
 
 ---
 
-## 13. 架构演进说明
+## 12. 架构演进说明
 
 相较于旧版（纯线性 pipeline），当前架构的核心变化：
 

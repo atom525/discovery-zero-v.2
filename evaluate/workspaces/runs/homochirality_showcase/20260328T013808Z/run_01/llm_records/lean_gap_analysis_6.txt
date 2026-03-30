@@ -1,0 +1,13 @@
+```json
+{
+  "gap_type": "other",
+  "explanation": "The Lean code is truncated mid-definition — the theorem statement `theorem n` is incomplete, with no type signature, no body, and no proof. This is not a compilation error per se but a failure to even state the formalization. The error message block is actually a natural-language planning sketch rather than real Lean compiler output, indicating the user has not yet crossed the formalization barrier.",
+  "subgoals": [
+    "State the core lemma precisely: ∀ (σ₀ D : ℝ) (hD : 0 < D) (k² : ℝ) (hk : 0 ≤ k²), σ₀ - D * k² ≤ σ₀",
+    "Optionally state the stronger characterization: equality holds iff k² = 0",
+    "Prove the lemma using basic real arithmetic (nlinarith / positivity / mul_nonneg)",
+    "Wrap the result in a docstring connecting it to the Frank model dispersion relation"
+  ],
+  "suggested_fix": "Replace the truncated code with a complete, self-contained formalization:\n\n```lean\nimport Mathlib\n\n/-- The growth rate σ₊(k²) = σ₀ - D * k² is maximized at k² = 0\n    when D > 0 and k² ≥ 0. This rules out Turing instability\n    for the symmetric Frank RD system with equal diffusion. -/\ntheorem no_turing_equal_diffusion\n    (σ₀ D : ℝ) (hD : 0 < D) (k_sq : ℝ) (hk : 0 ≤ k_sq) :\n    σ₀ - D * k_sq ≤ σ₀ := by\n  linarith [mul_nonneg (le_of_lt hD) hk]\n\n/-- Equality holds iff k² = 0, i.e., the maximum is uniquely at k = 0. -/\ntheorem no_turing_equal_diffusion_iff\n    (σ₀ D : ℝ) (hD : 0 < D) (k_sq : ℝ) (hk : 0 ≤ k_sq) :\n    σ₀ - D * k_sq = σ₀ ↔ k_sq = 0 := by\n  constructor\n  · intro h\n    have : D * k_sq = 0 := by linarith\n    exact (mul_eq_zero.mp this).resolve_left (ne_of_gt hD)\n  · intro h\n    rw [h, mul_zero, sub_zero]\n```\n\nKey points:\n- `mul_nonneg (le_of_lt hD) hk` gives `0 ≤ D * k²`, then `linarith` closes the first goal.\n- The iff version uses `mul_eq_zero` to split `D * k² = 0` and resolves `D ≠ 0` from `hD`.\n- This captures the precise mathematical content: the dispersion relation is monotonically decreasing in k², so no finite-wavenumber mode can be more unstable than k = 0."
+}
+```

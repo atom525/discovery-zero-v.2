@@ -445,7 +445,7 @@ class NeuralBPCorrector:
 
             loss = loss_fn(predictions, targets)
             loss.backward()
-            total_loss += float(loss)
+            total_loss += loss.item()
 
         if batch:
             optimizer.step()

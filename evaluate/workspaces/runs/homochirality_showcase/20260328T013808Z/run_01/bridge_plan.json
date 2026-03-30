@@ -1,0 +1,455 @@
+{
+  "target_statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+  "propositions": [
+    {
+      "id": "P1",
+      "statement": "Enantiomeric excess ee = (L-D)/(L+D) measures chirality bias; biological systems are near-homochiral (|ee| ≈ 1) while abiotic syntheses such as Miller-Urey are racemic (ee ≈ 0).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P2",
+      "statement": "Frank-type autocatalysis with mutual inhibition can amplify a nonzero initial ee to near-complete homochirality.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P3",
+      "statement": "Frank model alone cannot break perfect symmetry from ee_0 = 0 in a deterministic racemic closed system. The Z₂ symmetry L↔D is exact, so the racemic fixed point is valid (though potentially unstable).",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P4",
+      "statement": "Circularly polarized light (CPL) from astronomical sources can induce small enantiomeric excesses in amino acid photolysis/photosynthesis with anisotropy factor |g| ~ 10⁻⁴, yielding |ee_CPL| ~ 10⁻⁴. This is insufficient for |ee| > 0.999 without further amplification.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P5",
+      "statement": "Finite-volume stochastic fluctuations in a compartment with N chiral molecules create a random chiral bias of order δee ~ N^{-1/2}. For N ~ 10⁶ (a microliter droplet at μM concentration), δee ~ 10⁻³.",
+      "role": "seed",
+      "grade": "A",
+      "depends_on": [],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P6",
+      "statement": "Explicit Frank ODE system: dL/dt = k₀A + k₂LA − k_dL − k_inh·L·D; dD/dt = k₀A + k₂DA − k_dD − k_inh·L·D; A = A_total − L − D. Here k₀ is the non-catalytic production rate, k₂ is the autocatalytic rate constant, k_d is the first-order degradation rate, k_inh is the mutual inhibition (cross-heterodimer removal) rate constant, A_total is the total substrate, and A is the free substrate.",
+      "role": "bridge",
+      "grade": "A",
+      "depends_on": [
+        "P2"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P7",
+      "statement": "Initial symmetry breaking via CPL plus compartmental stochastic fluctuations: In small prebiotic compartments (pores, vesicles, tide pools) with N ~ 10⁶ amino acid molecules exposed to CPL, the combined initial bias is |ee_init| ~ max(10⁻⁴, 10⁻³) ~ 10⁻³, with a preferred sign set by CPL handedness. This provides a nonzero ee₀ without assuming any pre-existing chirality.",
+      "role": "bridge",
+      "grade": "B",
+      "depends_on": [
+        "P4",
+        "P5"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P8",
+      "statement": "Chiral Log-Ratio Construction: For a trajectory of the Frank ODE (P6) with L(t) > D(t) > 0, define Ψ(t) = ln(L(t)/D(t)). Then by direct computation: dΨ/dt = (1/L)dL/dt − (1/D)dD/dt = (L − D)·[k_inh − k₀A/(L·D)]. Since L > D > 0 implies L − D > 0, the sign of dΨ/dt equals the sign of [k_inh − k₀A/(L·D)].",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P6"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P9",
+      "statement": "Sufficient condition for ee amplification: Since L·D = η²(1−ee²)/4 where η = L+D, the condition k_inh > k₀A/(L·D) is implied by k_inh·η²(1−ee²)/4 > k₀·A_total, which holds for all ee ∈ (0,1) when η > η_c := 2√(k₀·A_total/k_inh). Therefore, if η(t) > η_c, then dΨ/dt > 0 and ee is strictly increasing at time t.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P8"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P10",
+      "statement": "Mechanistic interpretation of mutual inhibition: In the Frank ODE, the difference equation is d(L−D)/dt = k₂A(L−D), which contains no k_inh term — the difference grows exponentially with rate k₂A regardless of inhibition. Mutual inhibition enters only through the sum equation d(L+D)/dt = 2k₀A + k₂(L+D)A − k_d(L+D) − 2k_inh·L·D, where the −2k_inh·L·D term suppresses total population η.",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": [
+        "P6"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P11",
+      "statement": "Frank steady-state ee formula: At a homochiral fixed point of the Frank ODE (P6) with L* > D* > 0, the steady-state conditions yield: (i) A* = k_d/k₂, hence η* = A_total − k_d/k₂ (requires R := k₂·A_total/k_d > 1); (ii) L*·D* = k₀·A*/ k_inh = k₀·k_d/(k_inh·k₂); (iii) ee*² = 1 − 4k₀k_d/[k_inh·k₂·(A_total − k_d/k₂)²].",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P6",
+        "P8"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P12",
+      "statement": "Quantitative condition for near-complete homochirality: From P11, ee* > 0.999 (i.e., 1 − ee*² < 0.002) requires k_inh·k₂·(A_total − k_d/k₂)² > 2000·k₀·k_d. Equivalently, defining the 'homochirality number' H := k_inh·k₂·η*²/(k₀·k_d), the condition is H > 2000.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P11"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P13",
+      "statement": "Representative prebiotic parameter set: At distal hydrothermal or evaporative-pool conditions (T ~ 25–60°C, pH ~ 7–9), plausible rate constants are: k₀ ~ 10⁻⁸ s⁻¹, k₂ ~ 10⁻³ M⁻¹s⁻¹, k_d ~ 10⁻⁶ s⁻¹, k_inh ~ 10⁻² M⁻¹s⁻¹, A_total ~ 10⁻² M. These give R = k₂·A_total/k_d = 10⁴ >> 1, η* ≈ A_total ≈ 10⁻² M, and H = k_inh·k₂·η*²/(k₀·k_d) ≈ 10⁵ >> 2000.",
+      "role": "bridge",
+      "grade": "C",
+      "depends_on": [
+        "P12"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P14",
+      "statement": "Trajectory invariance of η > η_c: For the Frank ODE (P6) with R > 1, if η(0) > η_c and ee(0) > 0, then η(t) > η_c for all t > 0. The region {(L,D) : L+D > η_c, L > D > 0} is positively invariant under the Frank flow.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P6",
+        "P9"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "R1",
+      "statement": "Unresolved gap: convergence to the homochiral steady state. Monotonicity of Ψ alone does not formally guarantee convergence to the fixed point (L*, D*). A complete proof requires either LaSalle's invariance principle with boundedness, a proper Lyapunov function, or phase-plane analysis ruling out limit cycles.",
+      "role": "risk",
+      "grade": "D",
+      "depends_on": [
+        "P8",
+        "P9",
+        "P14"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "R2",
+      "statement": "Critical empirical unknown: existence of a prebiotic autocatalytic system with the required properties. No prebiotically plausible amino acid or peptide system has been demonstrated to exhibit both autocatalysis and mutual inhibition simultaneously under early Earth conditions.",
+      "role": "risk",
+      "grade": "D",
+      "depends_on": [
+        "P6",
+        "P13"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "R3",
+      "statement": "Edge-case analysis near ee = 0 and ee = 1: The Ψ = ln(L/D) construction requires L > D > 0 strictly. As D → 0, Ψ → ∞ and the analysis breaks down. The transition from the linear regime near ee = 0 to the nonlinear Ψ-dominated regime is not formally handled.",
+      "role": "risk",
+      "grade": "D",
+      "depends_on": [
+        "P8"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P15",
+      "statement": "Amplification timescale estimate: Starting from ee_init ~ 10⁻³, time to ee ~ 0.1 is t_lin ~ ln(100)/(k₂·A_total) ~ 5.3 days for representative parameters of P13. Total amplification to ee > 0.999 is on the order of weeks to years, well within early Earth timescales.",
+      "role": "derived",
+      "grade": "C",
+      "depends_on": [
+        "P7",
+        "P6",
+        "P13"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P16",
+      "statement": "Testable experimental predictions: (a) η_c = 2√(k₀·A_total/k_inh) predicts systems with stronger mutual inhibition require fewer molecules to begin amplification; (b) ee* increases with √k_inh for fixed other parameters; (c) Ψ = ln(L/D) should increase monotonically once η > η_c.",
+      "role": "experiment_support",
+      "grade": "C",
+      "depends_on": [
+        "P9",
+        "P11",
+        "P12"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P17",
+      "statement": "Early Earth environmental compatibility: The mechanism requires amino acids at μM–mM concentrations, CPL exposure, small compartments with N ~ 10⁶ molecules, temperatures 25–60°C, and an autocatalytic system with chiral selectivity and mutual inhibition. Conditions (i)–(iv) are compatible with early Earth ~4 Gya; condition (v) is the unresolved empirical unknown R2.",
+      "role": "bridge",
+      "grade": "B",
+      "depends_on": [
+        "P7",
+        "P13"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P18",
+      "statement": "Numerical verification of the full Frank ODE trajectory: Integrate the Frank ODE numerically with P13 parameters and ee_init = 10⁻³, verifying (a) Ψ(t) monotonically increasing, (b) η(t) > η_c throughout, (c) terminal ee matches P11 formula, (d) time to ee > 0.999 consistent with P15.",
+      "role": "experiment_support",
+      "grade": "C",
+      "depends_on": [
+        "P6",
+        "P8",
+        "P9",
+        "P11",
+        "P13",
+        "P14",
+        "P15"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "P19",
+      "statement": "Assembly of the complete mechanism: Combining (1) initial symmetry breaking via CPL + stochastic fluctuations (P7), (2) Frank-type autocatalysis with mutual inhibition (P6) amplifying ee from 10⁻³ to > 0.999 per the Lyapunov analysis (P8–P12), (3) under early Earth compatible conditions (P17), with (4) complete kinetic analysis (P11, P12, P15) — the mechanism satisfies all three target requirements, conditional on R2 (prebiotic autocatalyst existence), R1 (convergence proof), and R3 (edge cases).",
+      "role": "derived",
+      "grade": "B",
+      "depends_on": [
+        "P7",
+        "P8",
+        "P9",
+        "P11",
+        "P12",
+        "P13",
+        "P15",
+        "P17"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    },
+    {
+      "id": "T_target",
+      "statement": "Identify or construct a physically realizable prebiotic mechanism — which may consist of multiple sequential or coupled steps — that achieves |ee| > 0.999 starting from an initially racemic mixture (ee_0 = 0) under conditions compatible with early Earth (~4 Gya). The proposed mechanism must: (1) provide an explicit source of the initial chiral symmetry breaking without assuming any pre-existing ee; (2) amplify that initial bias to near-complete homochirality; (3) be accompanied by a complete kinetic analysis with realistic rate constants and environmental conditions.",
+      "role": "target",
+      "grade": "D",
+      "depends_on": [
+        "P19"
+      ],
+      "notes": null,
+      "formalization_notes": null,
+      "experiment_notes": null
+    }
+  ],
+  "chain": [
+    {
+      "id": "S1",
+      "statement": "Specify the full Frank ODE system with all five rate parameters, establishing the mathematical framework for all subsequent analysis.",
+      "uses": [
+        "P2"
+      ],
+      "concludes": [
+        "P6"
+      ],
+      "grade": "A",
+      "notes": null
+    },
+    {
+      "id": "S2",
+      "statement": "Combine CPL-induced bias (|ee| ~ 10⁻⁴) with compartmental stochastic fluctuations (δee ~ 10⁻³ for N ~ 10⁶) to establish a physically motivated initial chiral bias ee_init ~ 10⁻³ that does not assume any pre-existing ee.",
+      "uses": [
+        "P4",
+        "P5"
+      ],
+      "concludes": [
+        "P7"
+      ],
+      "grade": "B",
+      "notes": null
+    },
+    {
+      "id": "S3",
+      "statement": "Define Ψ(t) = ln(L(t)/D(t)) for L > D > 0 and compute dΨ/dt by direct substitution of the Frank ODE, obtaining dΨ/dt = (L−D)[k_inh − k₀A/(LD)].",
+      "uses": [
+        "P6"
+      ],
+      "concludes": [
+        "P8"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S4",
+      "statement": "Derive from P8 that dΨ/dt > 0 whenever η > η_c = 2√(k₀A_total/k_inh), establishing the sufficient condition for monotonic ee amplification.",
+      "uses": [
+        "P8"
+      ],
+      "concludes": [
+        "P9"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S5",
+      "statement": "Compute the Frank steady-state ee formula by solving fixed-point equations, yielding ee*² = 1 − 4k₀k_d/[k_inh·k₂·(A_total − k_d/k₂)²].",
+      "uses": [
+        "P6",
+        "P8"
+      ],
+      "concludes": [
+        "P11"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S6",
+      "statement": "Rearrange the steady-state formula to obtain the quantitative condition H > 2000 for ee* > 0.999.",
+      "uses": [
+        "P11"
+      ],
+      "concludes": [
+        "P12"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S7",
+      "statement": "Evaluate the homochirality number H for representative prebiotic rate constants, finding H ~ 10⁵ >> 2000.",
+      "uses": [
+        "P12"
+      ],
+      "concludes": [
+        "P13"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S8",
+      "statement": "Establish trajectory invariance: show the region η > η_c is positively invariant under the Frank flow when R > 1.",
+      "uses": [
+        "P6",
+        "P9"
+      ],
+      "concludes": [
+        "P14"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S9",
+      "statement": "Estimate amplification timescale from linearized dynamics near ee ≈ 0, finding weeks-to-years timescale compatible with early Earth.",
+      "uses": [
+        "P7",
+        "P6",
+        "P13"
+      ],
+      "concludes": [
+        "P15"
+      ],
+      "grade": "C",
+      "notes": null
+    },
+    {
+      "id": "S10",
+      "statement": "Collect environmental compatibility evidence showing all required conditions except the autocatalyst are consistent with early Earth ~4 Gya.",
+      "uses": [
+        "P7",
+        "P13"
+      ],
+      "concludes": [
+        "P17"
+      ],
+      "grade": "B",
+      "notes": null
+    },
+    {
+      "id": "S11",
+      "statement": "Assemble the complete mechanism: symmetry breaking (P7) → Frank amplification (P6, P8–P12) → near-complete homochirality (ee > 0.999) under early Earth conditions (P17), with complete kinetic analysis (P11, P12, P15).",
+      "uses": [
+        "P7",
+        "P8",
+        "P9",
+        "P11",
+        "P12",
+        "P13",
+        "P15",
+        "P17"
+      ],
+      "concludes": [
+        "P19"
+      ],
+      "grade": "B",
+      "notes": null
+    },
+    {
+      "id": "S12",
+      "statement": "The assembled mechanism (P19) satisfies all three target requirements conditionally, yielding the target at grade D due to unresolved risks R1 (convergence), R2 (prebiotic autocatalyst), and R3 (edge cases).",
+      "uses": [
+        "P19"
+      ],
+      "concludes": [
+        "T_target"
+      ],
+      "grade": "D",
+      "notes": null
+    }
+  ],
+  "summary": "A Chiral Log-Ratio Lyapunov analysis of the Frank autocatalysis model with mutual inhibition, showing that CPL + stochastic fluctuations provide initial ee ~ 10⁻³, which is amplified to ee > 0.999 when the homochirality number H = k_inh·k₂·η*²/(k₀·k_d) exceeds 2000. The mechanism is mathematically complete but empirically conditional on the existence of a prebiotic autocatalytic system with the required properties."
+}

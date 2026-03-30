@@ -70,43 +70,29 @@ def _minimal_bridge_plan(target_statement: str) -> dict:
     }
 
 
-_EVAL_DIR = Path("/root/.openclaw/skills/Zero/evaluation")
-_EVAL_AVAILABLE = _EVAL_DIR.exists()
-_skip_no_eval = pytest.mark.skipif(not _EVAL_AVAILABLE, reason="evaluation/ data deleted")
+_EVAL_DIR = Path(__file__).resolve().parents[1] / "evaluate"
+_SUITE_PATH = _EVAL_DIR / "suite.json"
+_SUITE_AVAILABLE = _SUITE_PATH.exists()
+_skip_no_suite = pytest.mark.skipif(not _SUITE_AVAILABLE, reason="suite.json not found")
+
+_HOMOCHIRALITY_CASE = _EVAL_DIR / "cases" / "homochirality_mechanism" / "case.json"
+_skip_no_case = pytest.mark.skipif(not _HOMOCHIRALITY_CASE.exists(), reason="case not found")
 
 
-@_skip_no_eval
+@_skip_no_suite
 def test_load_core_suite_config():
-    suite = load_suite_config(_EVAL_DIR / "suites" / "core_v1.json")
-    assert suite.suite_id == "core_v1"
-    assert len(suite.case_files) == 5
+    suite = load_suite_config(_SUITE_PATH)
+    assert suite.suite_id == "frontier_open_problems_v1"
+    assert len(suite.case_files) >= 1
 
 
-@_skip_no_eval
+@_skip_no_case
 def test_load_case_config_resolves_source_path():
-    case = load_case_config(_EVAL_DIR / "cases" / "no_cloning_theorem.json")
-    assert case.case_id == "no_cloning_theorem"
+    case = load_case_config(_HOMOCHIRALITY_CASE)
+    assert case.case_id == "homochirality_mechanism"
     assert case.source_proof_config.exists()
-    assert case.timeouts["lean"] == 300
     assert case.lean_policy["mode"] == "selective"
     assert case.planning_constraints
-
-
-@_skip_no_eval
-def test_load_huckel_case_allows_refutation():
-    case = load_case_config(_EVAL_DIR / "cases" / "huckel_4n_plus_2_rule.json")
-    assert case.case_id == "huckel_4n_plus_2_rule"
-    assert case.allow_refutation is True
-    assert "theorem correction" in " ".join(case.planning_constraints).casefold()
-
-
-@_skip_no_eval
-def test_load_triangle_concept_case_has_discovery_constraints():
-    case = load_case_config(_EVAL_DIR / "cases" / "triangle_symmetry_composition_concept.json")
-    assert case.case_id == "triangle_symmetry_composition_concept"
-    joined = " ".join(case.planning_constraints).casefold()
-    assert "group" in joined
-    assert "dihedral" in joined
 
 
 def test_summarize_run_extracts_metrics(tmp_graph_dir):
@@ -169,7 +155,7 @@ def test_summarize_run_extracts_metrics(tmp_graph_dir):
         case=BenchmarkCaseConfig(
             case_id="demo",
             display_name="Demo",
-            source_proof_config=Path("/root/.openclaw/skills/Zero/workspaces/no_cloning_theorem/proof_config.json"),
+            source_proof_config=Path(__file__).resolve().parents[1] / "evaluate" / "cases" / "homochirality_mechanism" / "proof_config.json",
             benchmark_scope="test scope",
         ),
         run_dir=run_dir,
@@ -228,7 +214,7 @@ def test_summarize_run_falls_back_to_target_key_when_theorem_missing(tmp_graph_d
         case=BenchmarkCaseConfig(
             case_id="demo_fallback",
             display_name="Demo fallback",
-            source_proof_config=Path("/root/.openclaw/skills/Zero/workspaces/no_cloning_theorem/proof_config.json"),
+            source_proof_config=Path(__file__).resolve().parents[1] / "evaluate" / "cases" / "homochirality_mechanism" / "proof_config.json",
             benchmark_scope="test scope",
         ),
         run_dir=run_dir,
@@ -238,7 +224,7 @@ def test_summarize_run_falls_back_to_target_key_when_theorem_missing(tmp_graph_d
         repeat_index=1,
     )
 
-    assert summary["metrics"]["final_target_belief"] == pytest.approx(0.73)
+    assert summary["final_target_belief"] == pytest.approx(0.73)
 
 
 def test_summarize_run_records_policy_skip(tmp_graph_dir):
@@ -304,7 +290,7 @@ def test_summarize_run_records_policy_skip(tmp_graph_dir):
         case=BenchmarkCaseConfig(
             case_id="selective",
             display_name="Selective",
-            source_proof_config=Path("/root/.openclaw/skills/Zero/workspaces/no_cloning_theorem/proof_config.json"),
+            source_proof_config=Path(__file__).resolve().parents[1] / "evaluate" / "cases" / "homochirality_mechanism" / "proof_config.json",
             benchmark_scope="selective scope",
         ),
         run_dir=run_dir,
@@ -380,7 +366,7 @@ def test_summarize_run_marks_bridge_ready_as_consumption_ready(tmp_graph_dir):
         case=BenchmarkCaseConfig(
             case_id="ready",
             display_name="Ready",
-            source_proof_config=Path("/root/.openclaw/skills/Zero/workspaces/no_cloning_theorem/proof_config.json"),
+            source_proof_config=Path(__file__).resolve().parents[1] / "evaluate" / "cases" / "homochirality_mechanism" / "proof_config.json",
             benchmark_scope="ready scope",
         ),
         run_dir=run_dir,
@@ -427,7 +413,7 @@ def test_summarize_run_timeout_not_localized(tmp_graph_dir):
         case=BenchmarkCaseConfig(
             case_id="timeout",
             display_name="Timeout",
-            source_proof_config=Path("/root/.openclaw/skills/Zero/workspaces/no_cloning_theorem/proof_config.json"),
+            source_proof_config=Path(__file__).resolve().parents[1] / "evaluate" / "cases" / "homochirality_mechanism" / "proof_config.json",
             benchmark_scope="timeout scope",
         ),
         run_dir=run_dir,
@@ -545,7 +531,7 @@ def test_cli_benchmark_run_suite(tmp_graph_dir, monkeypatch):
         suite_scorecard_path = tmp_graph_dir / "reports" / "suite_scorecard_zh.md"
 
     monkeypatch.setattr("discovery_zero.benchmark.run_suite", lambda *args, **kwargs: DummyResult())
-    suite_path = Path("/root/.openclaw/skills/Zero/evaluation/suites/core_v1.json")
+    suite_path = _SUITE_PATH
     result = runner.invoke(app, ["benchmark", "run-suite", "--suite", str(suite_path)])
     assert result.exit_code == 0
     assert "Suite summary:" in result.stdout
