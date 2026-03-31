@@ -419,13 +419,17 @@ class ClaimVerifier:
             if len(matches) != 1:
                 continue
             node = graph.nodes[matches[0]]
+            if node.is_locked():
+                continue
             if item.verdict == "verified":
                 node.belief = min(1.0, node.belief + positive_delta)
                 node.prior = max(node.prior, node.belief)
                 updated += 1
             elif item.verdict == "refuted":
-                node.state = "refuted"
-                node.belief = 0.0
-                node.prior = 0.0
+                # Only formal (Lean) verification can hard-refute.
+                # Claim verification uses heuristic/experiment backends,
+                # so apply a strong penalty and let BP determine the posterior.
+                node.belief = max(0.05, node.belief * 0.1)
+                node.prior = max(0.05, node.prior * 0.1)
                 updated += 1
         return updated

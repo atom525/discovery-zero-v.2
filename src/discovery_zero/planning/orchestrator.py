@@ -1815,7 +1815,7 @@ def _run_experiment_skill_with_code_fallback(
             "premises": [],
             "steps": [code],
             "conclusion": {
-                "statement": f"Experimental evidence strongly supports: {target.statement}",
+                "statement": f"Experimental evidence for claim tested in code (target: {target.statement[:120]})",
                 "formal_statement": None,
             },
             "module": "experiment",
@@ -1982,7 +1982,8 @@ def run_plausible_action(
                     "content": (
                         skill_prompt + "\n\n"
                         "Think step by step. Explain your reasoning in natural language. "
-                        "Do NOT try to format as JSON yet."
+                        "Do NOT try to format as JSON yet. "
+                        "Keep your response under 3000 words - focus on the most promising proof route."
                     ),
                 },
                 {"role": "user", "content": task_input},
@@ -2142,10 +2143,11 @@ def run_experiment_action(
 
         if has_concrete_counterexample and trials >= 1000 and pass_rate == 0.0:
             penalty_confidence = 0.95
-            outcome = "refuted"
+            outcome = "weakened"
             reasoning = (
                 f"Experiment found concrete counterexamples with zero successful trials "
-                f"across {trials} runs; this is treated as a strong empirical refutation."
+                f"across {trials} runs. Strong empirical evidence but only formal "
+                f"verification (Lean) can hard-refute; belief sharply reduced via BP."
             )
         elif has_concrete_counterexample and trials >= 100 and pass_rate == 0.0:
             penalty_confidence = 0.90
@@ -2182,11 +2184,25 @@ def run_experiment_action(
                 "This may indicate a coding issue rather than a mathematical refutation."
             )
 
+        # Attribute the result to what the experiment ACTUALLY tested (the
+        # LLM's own conclusion), not blindly to the target.  When the LLM
+        # tests an incorrect auxiliary formula, the penalty should land on
+        # that auxiliary node and propagate via BP — not hammer the target.
+        exp_conclusion = normalized.get("conclusion", {})
+        if isinstance(exp_conclusion, dict):
+            exp_conclusion_stmt = exp_conclusion.get("statement", "").strip()
+        elif isinstance(exp_conclusion, str):
+            exp_conclusion_stmt = exp_conclusion.strip()
+        else:
+            exp_conclusion_stmt = ""
+        if not exp_conclusion_stmt:
+            exp_conclusion_stmt = target.statement
+
         final_output = {
             "module": "experiment",
             "domain": normalized.get("domain", target.domain),
             "outcome": outcome,
-            "conclusion": {"statement": target.statement},
+            "conclusion": {"statement": exp_conclusion_stmt},
             "confidence": penalty_confidence,
             "steps": [
                 code,

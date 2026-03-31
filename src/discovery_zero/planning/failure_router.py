@@ -232,7 +232,10 @@ class FailureRouter:
 
         # ---- Experiment errors ----
         if et == ErrorType.EXPERIMENT_REFUTED:
-            return RecoveryAction.MARK_REFUTED
+            # Experiment refutations are handled via the weakened ingest path;
+            # no separate "mark refuted" action is needed.  Switch module so
+            # the engine tries a different approach on the next iteration.
+            return RecoveryAction.SWITCH_MODULE
 
         if et == ErrorType.EXPERIMENT_TIMEOUT:
             if retries_this_error == 1:

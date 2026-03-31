@@ -17,15 +17,26 @@ def test_ingest_verified_claim_sets_expected_priors():
         verification_source="lean",
         verdict="verified",
     )
-    node_refuted = ingest_verified_claim(
+    node_refuted_exp = ingest_verified_claim(
         graph,
         claim_text="bad claim",
         verification_source="experiment",
         verdict="refuted",
     )
+    node_refuted_lean = ingest_verified_claim(
+        graph,
+        claim_text="formally disproved",
+        verification_source="lean",
+        verdict="refuted",
+    )
     assert graph.nodes[node_experiment].belief >= 0.85
     assert graph.nodes[node_lean].state == "proven"
-    assert graph.nodes[node_refuted].state == "refuted"
+    # Experiment refutation weakens belief but does NOT hard-refute
+    assert graph.nodes[node_refuted_exp].state == "unverified"
+    assert graph.nodes[node_refuted_exp].belief < 0.1
+    # Lean (formal) refutation DOES hard-refute
+    assert graph.nodes[node_refuted_lean].state == "refuted"
+    assert graph.nodes[node_refuted_lean].belief == 0.0
 
 
 def test_propagate_verification_signals_threshold_trigger():

@@ -264,7 +264,15 @@ def run_gaia_bp(
         else:
             beliefs_by_var = bp.run(zig.factor_graph)
             diag = None
-    except InconsistentGraphError:
+    except InconsistentGraphError as exc:
+        logger.error(
+            "InconsistentGraphError during BP on graph with %d nodes, %d edges: %s. "
+            "Returning current beliefs unchanged. The graph likely contains "
+            "contradictory hard constraints that prevent convergence.",
+            len(graph.nodes),
+            len(graph.edges),
+            exc,
+        )
         return InferenceResult(
             node_beliefs={nid: graph.nodes[nid].belief for nid in graph.nodes},
             converged=False,

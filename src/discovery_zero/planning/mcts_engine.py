@@ -207,8 +207,16 @@ class MCTSDiscoveryEngine:
         experiment_attempts = 0
         lean_attempts = 0
         rolling_feedback = planning_feedback
+        iter_budget_seconds = min(
+            max(
+                (self.config.max_time_seconds / max(self.config.max_iterations, 1)) * 2.0,
+                30.0,
+            ),
+            3600.0,
+        )
 
         for iteration in range(1, self.config.max_iterations + 1):
+            iter_start = time.monotonic()
             steps_before_iteration = len(result.steps)
             lean_feedback_iteration = ""
             if time.monotonic() - t0 > self.config.max_time_seconds:
@@ -253,6 +261,35 @@ class MCTSDiscoveryEngine:
             target_belief_before = float(target_node.belief)
             graph_snapshot_before = graph.model_dump_json()
 
+            if time.monotonic() - iter_start > iter_budget_seconds:
+                result.steps.append(
+                    {
+                        "phase": "iteration_timeout_mcts",
+                        "iteration": iteration,
+                        "node_id": selected_node_id,
+                        "message": (
+                            f"Iteration exceeded wall-clock budget "
+                            f"({iter_budget_seconds:.1f}s) before action execution."
+                        ),
+                    }
+                )
+                result.iterations_completed = iteration
+                stuck_rounds += 1
+                # CRITICAL: always update HTPS and UCB even on timeout, to
+                # prevent dead loops where the same action is selected forever.
+                self.search_state.record_action(
+                    selected_node_id,
+                    selected_module,
+                    0.0,
+                    success=False,
+                    error_type="iteration_timeout_pre_action",
+                )
+                self._record_recent_module_outcome(selected_module, False)
+                htps_backup(self.htps_state, selected_path, target_belief_before)
+                if on_iteration_complete is not None:
+                    on_iteration_complete(iteration, result)
+                continue
+
             action_result = self._execute_selected_action(
                 graph=graph,
                 node_id=selected_node_id,
@@ -260,6 +297,36 @@ class MCTSDiscoveryEngine:
                 boundary_policy=boundary_policy,
                 feedback=combined_feedback,
             )
+            if time.monotonic() - iter_start > iter_budget_seconds:
+                result.steps.append(
+                    {
+                        "phase": "iteration_timeout_mcts",
+                        "iteration": iteration,
+                        "node_id": selected_node_id,
+                        "message": (
+                            f"Iteration exceeded wall-clock budget "
+                            f"({iter_budget_seconds:.1f}s) after action execution; "
+                            f"skipping ingest+BP but recording HTPS/UCB."
+                        ),
+                    }
+                )
+                result.iterations_completed = iteration
+                stuck_rounds += 1
+                # CRITICAL: record timeout as failure in HTPS and UCB to prevent
+                # the same (node, module) from being selected infinitely.
+                # The action DID complete but we skip ingest+BP due to time.
+                self.search_state.record_action(
+                    selected_node_id,
+                    selected_module,
+                    0.0,
+                    success=False,
+                    error_type="iteration_timeout_post_action",
+                )
+                self._record_recent_module_outcome(selected_module, False)
+                htps_backup(self.htps_state, selected_path, target_belief_before)
+                if on_iteration_complete is not None:
+                    on_iteration_complete(iteration, result)
+                continue
             if not action_result.success:
                 self._record_recent_module_outcome(selected_module, False)
                 self.search_state.record_action(

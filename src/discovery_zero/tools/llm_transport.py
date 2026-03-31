@@ -57,6 +57,10 @@ class TransportConfig:
     read_timeout: float = 300.0
     """Seconds to wait for the server to start sending the response."""
 
+    stream_chunk_timeout: float = 120.0
+    """Max seconds to wait between successive chunks in a streaming response.
+    If no data arrives within this window the connection is treated as dead."""
+
     pool_max_connections: int = 10
     """httpx connection pool — total connections across all hosts."""
 
@@ -209,6 +213,7 @@ class LLMTransport:
             return
 
         eff_timeout = timeout or self._config.read_timeout
+        chunk_timeout = self._config.stream_chunk_timeout
         for attempt in range(self._config.max_retries + 1):
             try:
                 with self._client.stream(
@@ -230,8 +235,15 @@ class LLMTransport:
                             status_code=resp.status_code,
                             body=body,
                         )
+                    last_chunk_time = time.monotonic()
                     for text_chunk in resp.iter_text():
+                        last_chunk_time = time.monotonic()
                         yield text_chunk
+                    idle = time.monotonic() - last_chunk_time
+                    if idle > chunk_timeout:
+                        raise TransportError(
+                            f"Stream idle for {idle:.1f}s (chunk_timeout={chunk_timeout}s); treating as dead connection"
+                        )
                 return
             except (NonRetryableError, StopIteration):
                 raise

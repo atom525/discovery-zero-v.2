@@ -406,6 +406,21 @@ def chat_completion(
     else:
         should_stream = bool(stream) and n == 1
 
+    def _empty_graceful_response() -> Dict[str, Any]:
+        if stream_record_path is not None:
+            stream_record_path.parent.mkdir(parents=True, exist_ok=True)
+            stream_record_path.write_text("", encoding="utf-8")
+        return _make_single_text_response(
+            "",
+            {
+                "id": f"graceful-empty-{int(time.time())}",
+                "object": "chat.completion",
+                "created": int(time.time()),
+                "model": config.model,
+                "usage": {},
+            },
+        )
+
     try:
         if should_stream:
             recorder = _StreamingTextRecorder(stream_record_path) if stream_record_path else None
@@ -458,8 +473,15 @@ def chat_completion(
                         extract_text_content(response),
                         encoding="utf-8",
                     )
-            except TransportError as fallback_exc:
-                raise LLMError(f"LLM request failed: {fallback_exc}") from fallback_exc
+            except Exception as fallback_exc:
+                if response_format is None:
+                    logger.warning(
+                        "Streaming fallback failed: %s; returning empty text for graceful degradation",
+                        fallback_exc,
+                    )
+                    response = _empty_graceful_response()
+                else:
+                    raise LLMError(f"LLM request failed: {fallback_exc}") from fallback_exc
         else:
             raise LLMError(f"LLM request failed: {exc}") from exc
     except LLMError as exc:
@@ -478,8 +500,15 @@ def chat_completion(
                         extract_text_content(response),
                         encoding="utf-8",
                     )
-            except TransportError as fallback_exc:
-                raise LLMError(f"LLM request failed: {fallback_exc}") from fallback_exc
+            except Exception as fallback_exc:
+                if response_format is None:
+                    logger.warning(
+                        "Streaming parse fallback failed: %s; returning empty text for graceful degradation",
+                        fallback_exc,
+                    )
+                    response = _empty_graceful_response()
+                else:
+                    raise LLMError(f"LLM request failed: {fallback_exc}") from fallback_exc
         else:
             raise
 
@@ -517,8 +546,12 @@ def chat_completion(
                     timeout=float(timeout),
                     headers=_auth_headers(config.api_key),
                 )
-            except TransportError as exc:
-                logger.warning("Auto-continue request failed: %s", exc)
+            except Exception as exc:
+                logger.warning(
+                    "Auto-continue round %d failed: %s; returning accumulated text",
+                    continuation_round,
+                    exc,
+                )
                 break
             chunk_text = extract_text_content(response)
             accumulated_text += chunk_text

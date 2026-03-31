@@ -230,7 +230,7 @@ class ZeroConfig:
     verification_parallel_workers: int = _env_int("DISCOVERY_ZERO_VERIFICATION_PARALLEL_WORKERS", 3)
     verification_loop_enabled: bool = _env_bool("DISCOVERY_ZERO_VERIFICATION_LOOP_ENABLED", True)
     lean_feedback_enabled: bool = _env_bool("DISCOVERY_ZERO_LEAN_FEEDBACK_ENABLED", True)
-    unverified_claim_prior: float = _env_float("DISCOVERY_ZERO_UNVERIFIED_CLAIM_PRIOR", 0.15)
+    unverified_claim_prior: float = _env_float("DISCOVERY_ZERO_UNVERIFIED_CLAIM_PRIOR", 0.25)
     bp_propagation_threshold: int = _env_int("DISCOVERY_ZERO_BP_PROPAGATION_THRESHOLD", 1)
     max_decompose_depth: int = _env_int("DISCOVERY_ZERO_MAX_DECOMPOSE_DEPTH", 4)
     structural_complexity_threshold: int = _env_int("DISCOVERY_ZERO_STRUCTURAL_COMPLEXITY_THRESHOLD", 2)

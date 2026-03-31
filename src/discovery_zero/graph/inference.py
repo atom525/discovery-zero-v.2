@@ -364,9 +364,16 @@ def propagate_verification_signals(
         if target_node is None:
             continue
         if verdict == "refuted":
-            target_node.state = "refuted"
-            target_node.prior = 0.0
-            target_node.belief = 0.0
+            if backend == "experiment":
+                # Experiments cannot hard-refute — apply a strong belief
+                # penalty and let BP compute the posterior naturally.
+                if not target_node.is_locked():
+                    target_node.prior = max(0.05, target_node.prior * 0.05)
+                    target_node.belief = max(0.05, target_node.belief * 0.05)
+            else:
+                target_node.state = "refuted"
+                target_node.prior = 0.0
+                target_node.belief = 0.0
             continue
         if backend == "lean":
             target_node.state = "proven"

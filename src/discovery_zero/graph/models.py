@@ -51,6 +51,19 @@ class Module(str, Enum):
     RETRIEVE = "retrieve"
 
 
+class OperatorType(str, Enum):
+    """Deprecated: kept for backward compatibility with serialized graphs.
+
+    Per Gaia theory (03-propositional-operators.md §4), all reasoning edges
+    use SOFT_IMPLICATION ↝(p₁, p₂).  The adapter no longer reads this field;
+    it derives p₁ from edge.confidence and p₂ = 0.5 (MaxEnt default).
+    """
+
+    ENTAILMENT = "entailment"
+    INDUCTION = "induction"
+    ABDUCTION = "abduction"
+
+
 class Node(BaseModel):
     """A proposition node in the reasoning hypergraph.
 
@@ -134,6 +147,7 @@ class Hyperedge(BaseModel):
     claim_refs: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     edge_type: EdgeType = "heuristic"
+    operator_type: Optional[OperatorType] = None
 
     @field_validator("confidence")
     @classmethod
@@ -231,6 +245,7 @@ class HyperGraph(BaseModel):
         steps: list[str],
         confidence: float = 0.5,
         edge_type: EdgeType | None = None,
+        operator_type: OperatorType | None = None,
     ) -> Hyperedge:
         premise_ids = [pid for pid in premise_ids if pid != conclusion_id]
         for nid in premise_ids + [conclusion_id]:
@@ -238,6 +253,9 @@ class HyperGraph(BaseModel):
                 raise ValueError(f"Node '{nid}' not found in hypergraph")
         if edge_type is None:
             edge_type = "formal" if module == Module.LEAN else "heuristic"
+        # operator_type is deprecated (kept for backward compat with serialized
+        # graphs).  The adapter derives factor parameters from edge_type and
+        # confidence per Gaia theory.  Do not auto-infer.
         edge = Hyperedge(
             premise_ids=premise_ids,
             conclusion_id=conclusion_id,
@@ -245,6 +263,7 @@ class HyperGraph(BaseModel):
             steps=steps,
             confidence=confidence,
             edge_type=edge_type,
+            operator_type=operator_type,
         )
         self.edges[edge.id] = edge
         # Maintain adjacency indices

@@ -386,7 +386,7 @@ def test_experiment_skill_accepts_raw_python_block(monkeypatch):
     assert parsed["domain"] == "number_theory"
     assert parsed["steps"][0].startswith("import json")
     assert parsed["conclusion"]["statement"].startswith(
-        "Experimental evidence strongly supports:"
+        "Experimental evidence for claim tested in code"
     )
 
 
@@ -404,7 +404,8 @@ def test_bridge_plan_input_enforces_explicit_target_and_risk_rules():
     assert "must NOT appear in depends_on of any non-risk proposition" in prompt
 
 
-def test_run_experiment_action_hard_refutes_on_zero_pass_large_trials(monkeypatch):
+def test_run_experiment_action_weakens_on_zero_pass_large_trials(monkeypatch):
+    """Experiments should never hard-refute; even the strongest case uses 'weakened'."""
     g = HyperGraph()
     target = g.add_node("Conjecture", belief=0.4, domain="number_theory")
 
@@ -446,7 +447,7 @@ def test_run_experiment_action_hard_refutes_on_zero_pass_large_trials(monkeypatc
     )
 
     _, normalized, judge = run_experiment_action(g, target.id, model="gpt-5.2")
-    assert normalized["outcome"] == "refuted"
+    assert normalized["outcome"] == "weakened"
     assert normalized["confidence"] == pytest.approx(0.95)
     assert judge["confidence"] == pytest.approx(0.95)
 

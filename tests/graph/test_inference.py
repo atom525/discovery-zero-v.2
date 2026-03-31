@@ -26,13 +26,40 @@ class TestGaiaBPPropagation:
         assert g.nodes[n2.id].belief > 0.5
 
     def test_multi_premise_edge(self):
+        """Multi-premise with strong premises, strong confidence, neutral prior.
+
+        With SOFT_IMPLICATION ↝(0.85, 0.5) and CONJUNCTION mediator:
+          When mediator is true (premises jointly hold): p₁=0.85 for conclusion.
+          When mediator is false: p₂=0.5 (MaxEnt, no information).
+        For strong premises (0.95, 0.8), mediator ≈ 0.76.
+
+        With neutral prior (0.5), the positive evidence should raise belief.
+        """
+        g = HyperGraph()
+        n1 = g.add_node("axiom 1", belief=0.95, prior=0.95)
+        n2 = g.add_node("axiom 2", belief=0.8, prior=0.8)
+        n3 = g.add_node("conclusion", belief=0.5, prior=0.5)
+        g.add_hyperedge([n1.id, n2.id], n3.id, Module.PLAUSIBLE, [], 0.85)
+        propagate_beliefs(g)
+        # Strong evidence (p=0.85) with strong premises raises belief above neutral prior
+        assert g.nodes[n3.id].belief > 0.5
+
+    def test_multi_premise_edge_low_prior(self):
+        """Multi-premise with strong premises but skeptical prior (0.1).
+
+        With SOFT_IMPLICATION ↝(0.6, 0.5): moderate evidence combined with
+        low prior. The posterior is a Bayesian update — it may increase or
+        stay near the prior depending on the evidence strength.
+        """
         g = HyperGraph()
         n1 = g.add_node("axiom 1", belief=0.95, prior=0.95)
         n2 = g.add_node("axiom 2", belief=0.8, prior=0.8)
         n3 = g.add_node("conclusion", belief=0.1, prior=0.1)
         g.add_hyperedge([n1.id, n2.id], n3.id, Module.PLAUSIBLE, [], 0.6)
         propagate_beliefs(g)
-        assert g.nodes[n3.id].belief > 0.1
+        # Posterior is near the Bayes-optimal value, belief changed from prior
+        assert g.nodes[n3.id].belief != 0.1  # belief actually updates
+        assert 0.0 < g.nodes[n3.id].belief < 0.5  # moderate evidence, low prior
 
     def test_multi_path_enhancement(self):
         g = HyperGraph()

@@ -2252,6 +2252,7 @@ def run_suite(
                     Implies resume=True.
     """
     import concurrent.futures as _futures
+    import signal as _signal
     import threading as _threading
 
     if resume_dir is not None:
@@ -2290,6 +2291,20 @@ def run_suite(
     repeats = int(repeats_override or suite.repeats)
     _results_lock = _threading.Lock()
     case_results: list[dict[str, Any]] = []
+    default_case_timeout_seconds = int(
+        max(300.0, float(getattr(CONFIG, "mcts_max_time_seconds", 0.0) or 0.0) * 1.5)
+    )
+
+    def _mark_case_completed(case_id: str) -> None:
+        with _results_lock:
+            completed_case_ids.add(case_id)
+            try:
+                progress_path.write_text(
+                    json.dumps({"completed": sorted(completed_case_ids)}, indent=2),
+                    encoding="utf-8",
+                )
+            except Exception:
+                pass
 
     def _run_one_case(case: BenchmarkCaseConfig) -> dict[str, Any]:
         case_repeats = int(case.repeats or repeats)
@@ -2330,17 +2345,31 @@ def run_suite(
         agg = aggregate_case_runs(case, run_summaries)
 
         # Update progress
-        with _results_lock:
-            completed_case_ids.add(case.case_id)
-            try:
-                progress_path.write_text(
-                    json.dumps({"completed": sorted(completed_case_ids)}, indent=2),
-                    encoding="utf-8",
-                )
-            except Exception:
-                pass
+        _mark_case_completed(case.case_id)
 
         return agg
+
+    def _run_one_case_with_timeout(case: BenchmarkCaseConfig) -> dict[str, Any]:
+        timeout_seconds = default_case_timeout_seconds
+        if timeout_seconds <= 0:
+            return _run_one_case(case)
+        if _threading.current_thread() is not _threading.main_thread():
+            # signal-based timeout only works on main thread; fall back to normal call.
+            return _run_one_case(case)
+
+        def _raise_timeout(_signum: int, _frame: Any) -> None:
+            raise TimeoutError(
+                f"Case '{case.case_id}' timed out after {timeout_seconds}s."
+            )
+
+        previous_handler = _signal.getsignal(_signal.SIGALRM)
+        try:
+            _signal.signal(_signal.SIGALRM, _raise_timeout)
+            _signal.alarm(timeout_seconds)
+            return _run_one_case(case)
+        finally:
+            _signal.alarm(0)
+            _signal.signal(_signal.SIGALRM, previous_handler)
 
     if max_parallel > 1:
         with _futures.ThreadPoolExecutor(max_workers=max_parallel) as pool:
@@ -2372,7 +2401,26 @@ def run_suite(
                 if found_summaries:
                     case_results.append(aggregate_case_runs(case, found_summaries))
                     continue
-            case_results.append(_run_one_case(case))
+            try:
+                case_results.append(_run_one_case_with_timeout(case))
+            except TimeoutError as exc:
+                _mark_case_completed(case.case_id)
+                case_results.append(
+                    {
+                        "case_id": case.case_id,
+                        "error": str(exc),
+                        "status": "timeout",
+                    }
+                )
+            except Exception as exc:
+                _mark_case_completed(case.case_id)
+                case_results.append(
+                    {
+                        "case_id": case.case_id,
+                        "error": str(exc),
+                        "status": "error",
+                    }
+                )
 
     suite_summary = aggregate_suite_results(
         suite=suite,
