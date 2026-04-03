@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dz-modules-workspace"
+version = "0.1.0"
+description = "Workspace for Discovery Zero modularization packages"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov",
+  "ruff>=0.6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [
+  "packages/dz-hypergraph/src",
+  "packages/dz-verify/src",
+  "packages/dz-engine/src",
+  "packages/dz-mcp/src",
+]
+markers = [
+  "llm: tests that require real LLM endpoint credentials",
+  "lean: tests that require Lean toolchain/runtime",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "W"]

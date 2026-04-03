@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dz-engine"
+version = "0.1.0"
+description = "Discovery Zero MCTS core engine"
+requires-python = ">=3.12"
+dependencies = [
+  "dz-hypergraph",
+  "dz-verify",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dz_engine"]

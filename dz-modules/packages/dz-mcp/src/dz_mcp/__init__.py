@@ -1,0 +1,1 @@
+"""Discovery Zero MCP package."""

@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dz-verify"
+version = "0.1.0"
+description = "Discovery Zero verification layer"
+requires-python = ">=3.12"
+dependencies = [
+  "dz-hypergraph",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dz_verify"]
